@@ -61,7 +61,7 @@
     "max_spawns_per_round": 100,
     "pcf_round_max": 3,
     "uncached_input_ceiling": "2.5M/轮",
-    "throughput_ceiling": "80M/轮（含 cache_read 总吞吐；2026-09-27 榨干批 8M→80M，供应商硬顶仍是真约束）",
+    "throughput_ceiling": "80M/轮（含 cache_read 总吞吐；2026-09-27 高强探索批 8M→80M，供应商硬顶仍是真约束）",
     "window_budget_pct": "95%",
     "gp_team_uncached_max": "150k/次",
     "audit_class_share_max": "40%",

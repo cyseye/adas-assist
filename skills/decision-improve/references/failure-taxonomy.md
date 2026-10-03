@@ -1,6 +1,6 @@
 # 失败受控标签表（failure-taxonomy）
 
-> 定版 2026-09-26（榨干轮，外参差量 D2 吸收：失败描述禁自由文本——TRAIL 实证最优模型自由归类仅 11% 一致，词表须预置；MAST 2503.13657 三类骨架+TRAIL 2505.08638 细类本地化+本仓 lesson 实证，lessons 溯源路径=`.claude/.state/evolution-pool/lessons-2026-09.md`）。消费方：decision-improve 复盘归因行、effect-governance 周评估机械统计（task-driver 首轮评审修正：第三消费方宣称已删——无写入者接线不挂空名）。标签增删走本文件单源，禁他处自造同义标签。
+> 定版 2026-09-26（高强探索轮，外参差量 D2 吸收：失败描述禁自由文本——TRAIL 实证最优模型自由归类仅 11% 一致，词表须预置；MAST 2503.13657 三类骨架+TRAIL 2505.08638 细类本地化+本仓 lesson 实证，lessons 溯源路径=`.claude/.state/evolution-pool/lessons-2026-09.md`）。消费方：decision-improve 复盘归因行、effect-governance 周评估机械统计（task-driver 首轮评审修正：第三消费方宣称已删——无写入者接线不挂空名）。标签增删走本文件单源，禁他处自造同义标签。
 
 | # | 标签 | 定义一句 | 锚 |
 |---|---|---|---|
