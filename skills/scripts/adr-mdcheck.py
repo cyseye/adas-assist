@@ -204,7 +204,7 @@ def lifecycle_retro_grep(skill_name):
     ref = subprocess.run(["grep", "-rl", skill_name,
                           str(home / "skills"), str(home / "commands"), str(home / "agents"),
                           str(home / "standards"), str(home / "rules"),
-                          str(home / "README.md"), str(home / "AGENTOS-MAP.md"),
+                          str(home / "README.md"), str(home / "ADAS-ASSIST-MAP.md"),
                           str(home / "decisions")],
                          capture_output=True, text=True)
     refs = [l for l in ref.stdout.splitlines()

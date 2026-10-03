@@ -1,6 +1,6 @@
-# agentos-lite（极简版）
+# adas-assist（极简版）
 
-agentos-lite：面向 Claude Code 的自进化元层体系**精简版**——保留自进化闭环（反射层八脚本+进化宿主）、决策体系（record/verify/improve 三件+explore/consensus/lifecycle/devils-panel 配套）与治理族瘦身五件。clone 即用，零本机基建依赖。
+adas-assist：面向 Claude Code 的自进化元层体系**精简版**——保留自进化闭环（反射层八脚本+进化宿主）、决策体系（record/verify/improve 三件+explore/consensus/lifecycle/devils-panel 配套）与治理族瘦身五件。clone 即用，零本机基建依赖。
 
 ## 项目定位
 

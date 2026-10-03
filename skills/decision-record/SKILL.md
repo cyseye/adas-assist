@@ -11,7 +11,7 @@ description: "决策沉淀/ADR/架构决策记录：记为可追溯 ADR，主 ag
 
 ## 运行约定
 
-- `{adr_dir}` = `~/.claude/decisions/adr/{域}/`（双域：`meta/` 元层工程——agentos 机制/文档治理/方法论，无法归类归此；`data/` 数据业务共性决策，首份落此写 frontmatter `domain: data`（dual-domain-taxonomy）；**落点路由**：harness skill 业务决策 → 对应 skill `decisions/`（本地保留、不进本索引、不扫治理信号），业务项目技术选型 → `project-docs/`）
+- `{adr_dir}` = `~/.claude/decisions/adr/{域}/`（双域：`meta/` 元层工程——adas-assist 机制/文档治理/方法论，无法归类归此；`data/` 数据业务共性决策，首份落此写 frontmatter `domain: data`（dual-domain-taxonomy）；**落点路由**：harness skill 业务决策 → 对应 skill `decisions/`（本地保留、不进本索引、不扫治理信号），业务项目技术选型 → `project-docs/`）
 - `{task_dir}` = 当前任务工作目录（默认 cwd），中间产物走 `{task_dir}/.build/`
 - 不 spawn subagent，主 agent 交互式执行
 - 命名：`{语义slug}.md`（目录即业务域），slug 全局唯一、禁数字编号（规范见 `standards/common/doc-naming.md`）

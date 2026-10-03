@@ -48,4 +48,4 @@ io-governance：对照 io-budgets 审计注入/回传/命名合规（数值唯�
 
 ## 归口登记
 
-部门归属见 `~/.claude/AGENTOS-MAP.md §组织架构`；成员 agent：exec-json-fixer。
+部门归属见 `~/.claude/ADAS-ASSIST-MAP.md §组织架构`；成员 agent：exec-json-fixer。

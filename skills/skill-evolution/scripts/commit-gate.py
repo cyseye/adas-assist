@@ -29,7 +29,7 @@ STAGED_BLOCKLIST = [
     ("dev-demo-mode.md", "demo 模式说明文档（本地演示专用）"),
     (".figma-workspace/", "figma 还原工作区瞬态产物"),
     (".build/", "构建/检查中间产物"),
-    (".claude/.state/", "agentos 运行时状态"),
+    (".claude/.state/", "adas-assist 运行时状态"),
     (".zcode/", "本地瞬态目录"),
     ("project/frontend/screenshots/", "截图验证瞬态产物"),
     (".claude/settings.json", "本地个人配置（已跟踪，改动永不提交）"),

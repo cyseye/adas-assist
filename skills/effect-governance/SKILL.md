@@ -5,7 +5,7 @@ description: "战略评估部统管五职能组（含进化统管）。触发词
 
 # effect-governance · 战略评估部统管（公立）
 
-三部制组织（AGENTOS-MAP §组织架构）战略评估部行动实体（归属细节归 AGENTOS-MAP，不复写），五职能组：效果闭环/周评估/证据链审计/对抗验证调度/进化统管（§⑤，含复盘统筹）。评估协议 canonical=`_shared/assessment-protocol.md`（未包含，置信度 H/M/L 分级+审计动作+对抗调度表；主控按本文件内嵌流程自裁）；效果验证底层协议=`_shared/evolution-discipline.md §效果验证协议`。standard 型（主控串行；转对抗须用户点头）。GLM 尾部污染探针（`_shared/scripts/glm-pollution-probe.py` 未包含）：探针不可用时本项读数 no_data，不阻断其余议程。
+三部制组织（ADAS-ASSIST-MAP §组织架构）战略评估部行动实体（归属细节归 ADAS-ASSIST-MAP，不复写），五职能组：效果闭环/周评估/证据链审计/对抗验证调度/进化统管（§⑤，含复盘统筹）。评估协议 canonical=`_shared/assessment-protocol.md`（未包含，置信度 H/M/L 分级+审计动作+对抗调度表；主控按本文件内嵌流程自裁）；效果验证底层协议=`_shared/evolution-discipline.md §效果验证协议`。standard 型（主控串行；转对抗须用户点头）。GLM 尾部污染探针（`_shared/scripts/glm-pollution-probe.py` 未包含）：探针不可用时本项读数 no_data，不阻断其余议程。
 
 ## ① 闭环检查（默认动作）
 

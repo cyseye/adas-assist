@@ -14,7 +14,7 @@
 | meta/机制 | 元层运转机制与架构（反射/hook/闭环/并发/监督/检索/路由/进化链） | adr + decision |
 | meta/治理 | 边界规则资产（入库/分类/文档/skill 资产/宪法/信号分级/收尾门/克制登记） | adr + decision |
 | meta/方法论 | 流程判据与分档（分析方法/影响面/公共层抽取/智能分档/收敛边界） | adr + decision |
-| meta/复盘 | agentos 工程教训（postmortem/capa 横切节） | postmortem + capa |
+| meta/复盘 | adas-assist 工程教训（postmortem/capa 横切节） | postmortem + capa |
 | data/模型 | 表设计/ER/数据结构 | adr + postmortem |
 | data/加工 | ETL/tech-spec/数据流水线 | adr |
 | data/展示 | 前端还原/figma/可视化 | adr |
@@ -51,7 +51,7 @@
 | 字段 | 约束 |
 |---|---|
 | title | 简短可读，≤20 字，含关键结论 |
-| path | 相对 `~/.claude/decisions/` 或仓库根；跨仓单源资产（双仓权威分界：共享 skill `decisions/`、`postmortems/` 在本仓）允许 agentos 绝对路径指针，禁复制副本 |
+| path | 相对 `~/.claude/decisions/` 或仓库根；跨仓单源资产（双仓权威分界：共享 skill `decisions/`、`postmortems/` 在本仓）允许 adas-assist 绝对路径指针，禁复制副本 |
 | type | 枚举：adr / lifecycle / postmortem / capa / requirement / decision / reference（外参/调研沉底件的索引行专用，原文在本地不入库域，2026-09-27 沉淀治理轮登记）/ tombstone（冷藏项：判死理由+复活条件入摘要，产物清理后指针可指向存活载体；2026-09-16 战略日历轮登记）；新类型须先在此登记再使用，避免散落 |
 | summary | 一句话 ≤30 字（阈值单源=knowledge-lifecycle.md 压缩原则），写结论而非描述；单一主题一行（原子化回写软门，2026-09-25 对标批：禁多主题打包行，写入前先 grep 同主题既有行防重复——先搜后写）；**bigram 约定（全出口适用，2026-09-26 自 knowledge-precipitation-protocol 并入）：须含 ≥2 个领域实词——中文 bigram（如「分库分表」「骨架优先」）或 ≥3 字符英文 token（如 `worktree`），禁全泛词（问题/处理/优化/机制等停用词）。依据：knowledge-recall 按实词交集计分（每命中 2 分，≥2 分才召回），全泛词 summary 沉淀即失效 |
 | cross_link | `字段:目标ID`（协议定义的跨类型链），多目标用 `;` 分隔（`pending_adr:0003;0004`）；无则 `-`；主题软关联靠 tag 分节，不进此字段；**supersede 双向锚**（2026-09-25 起）：条目被取代时旧行不删，cross_link 追加 `superseded_by:{新产物slug}`，与新 ADR frontmatter `supersedes` 构成双向可溯边（ADR-M12 双向一致在索引层的镜像，消「删行即失锚」违证据链硬门），历史行触碰时惰性补齐不批量回写；登记日≠裁决生效日时 summary 前缀 `effective:YYYY-MM-DD`（bi-temporal 语义，回填类条目适用） |

@@ -61,7 +61,7 @@ text 文件读-改-写在无锁下无法真正原子。各类修改并发的处�
 原则：
 
 - **不预防到底，但能发现+修复**：并发导致的不一致由 verify（adr 对象）与 session-review 一致性扫描事后揪出，主控按 `adr-checklist.md` 修复
-- **git 是最终真相**：入库知识文件的跨会话并发终极冲突 = git merge conflict，agentos 不重造版本控制；PENDING 等运行时文件全量快照语义（最新磁盘真值胜出）
+- **git 是最终真相**：入库知识文件的跨会话并发终极冲突 = git merge conflict，adas-assist 不重造版本控制；PENDING 等运行时文件全量快照语义（最新磁盘真值胜出）
 - **KNOWLEDGE 更新 re-read**：record 更新 KNOWLEDGE 时写前重读，目标条目已存在则跳过、检测到新条目则 re-base 自己的追加
 
 ## 与其他 decision skill 的边界

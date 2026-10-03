@@ -588,7 +588,7 @@ def compute_metrics(repo: Path, cutoff: datetime) -> list[str]:
     # 加关键词抽验（in 存在即过；读失败按缺失计，不中断周报）
     probes = {
         "KNOWLEDGE": (asset / "decisions/KNOWLEDGE.md", "决策"),
-        "BLUEPRINT": (asset / "BLUEPRINT.md", "agentos"),
+        "BLUEPRINT": (asset / "BLUEPRINT.md", "adas-assist"),
         "signal-tiers": (asset / "skills/_shared/signal-tiers.json", "tier"),
         "io-budgets": (asset / "skills/_shared/io-budgets.json", "max_items"),
     }
@@ -667,7 +667,7 @@ def compute_metrics(repo: Path, cutoff: datetime) -> list[str]:
     except OSError:
         dl_stale_days = None
     if dl_stale_days is not None and dl_stale_days > 2:
-        lines.append(f"- ⚠ dead-letter：日档日志 {dl_stale_days:.0f} 天未更新（夜批链疑静默死）→ 查 launchd com.nan.agentos-evolution.err 与 daily-archive.py，修复前本报告其余日档口径全部存疑")
+        lines.append(f"- ⚠ dead-letter：日档日志 {dl_stale_days:.0f} 天未更新（夜批链疑静默死）→ 查 launchd com.nan.adas-assist-evolution.err 与 daily-archive.py，修复前本报告其余日档口径全部存疑")
     joint_due, joint_days = _joint_due(repo)
     if joint_due:
         lines.append(f"- ⚠ joint-review-due：部门联审到期（>{joint_days} 天未审）→ 触发词「部门联审/交叉审查」执行，审后 --joint-review 重置锚")
@@ -914,7 +914,7 @@ def _model_analysis(lines: list[str], force: bool = False) -> list[str]:
     # 把同报告非超线事实行一并作 grounding，禁建议与事实冲突
     facts = [ln for ln in lines if ln.startswith("- ") and not ln.startswith("- ⚠")][:6]
     prompt = (
-        "以下是 agentos 周评估报告的超线项。逐条给一行归因+一行建议，总计不超过"
+        "以下是 adas-assist 周评估报告的超线项。逐条给一行归因+一行建议，总计不超过"
         f" {max_lines} 行，每行以 '- ' 开头且不超过 120 字，禁止复述原文，禁止输出其他内容：\n"
         + "\n".join(warns)
         + "\n\n[现状锚·同报告脚本段事实] 建议不得与上述事实矛盾；与事实冲突时以事实为准并显式标注：\n"

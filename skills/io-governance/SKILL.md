@@ -5,7 +5,7 @@ description: "IO 组统管：注入/回传/命名合规审计，预算唯一写�
 
 # io-governance · 运行治理部 IO 组统管
 
-职能部门化组织（AGENTOS-MAP §组织架构）运行治理部 IO 组行动实体（归属细节归 AGENTOS-MAP，不复写）。职责=本域**审计+对账+预算写者**，quick 型（主控串行、零 PCF）。协议 canonical=`_shared/io-protocol.md`；数值单源=`_shared/io-budgets.json`。
+职能部门化组织（ADAS-ASSIST-MAP §组织架构）运行治理部 IO 组行动实体（归属细节归 ADAS-ASSIST-MAP，不复写）。职责=本域**审计+对账+预算写者**，quick 型（主控串行、零 PCF）。协议 canonical=`_shared/io-protocol.md`；数值单源=`_shared/io-budgets.json`。
 
 ## 审计（默认动作）
 

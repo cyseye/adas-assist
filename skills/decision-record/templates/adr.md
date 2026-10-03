@@ -2,7 +2,7 @@
 title: <断言式决策句——写「决定了什么」而非主题词（表达规范见仓内 memory 画像 solution-output-style 条目）>
 status: Proposed
 date: YYYY-MM-DD
-supersedes:        # 可选：被本 ADR 取代的旧 ADR slug（历史例：agentos-loop，已删）
+supersedes:        # 可选：被本 ADR 取代的旧 ADR slug（历史例：adas-assist-loop，已删）
 superseded_by:     # 可选：状态机维护时由新 ADR 回填（如 knowledge-doc-governance-consolidation）
 related_consensus: # 可选：源自 consensus 时填其 final.json 路径（跨类型链）
 related_postmortem:# 可选：源自 postmortem 时填其 slug（跨类型链）

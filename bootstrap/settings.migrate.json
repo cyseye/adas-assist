@@ -1,5 +1,5 @@
 {
-  "$comment": "迁移模板：新机以此为基础重建 settings.json（凭据占位须手填，hooks 单源 bootstrap/settings.hooks.json）。敏感裁决见 AGENTOS-MAP §115 忽略行。生成于 2026-09-25 资产管控全面批。；随 settings.json 结构性变更时同步本模板（2026-09-25 补）",
+  "$comment": "迁移模板：新机以此为基础重建 settings.json（凭据占位须手填，hooks 单源 bootstrap/settings.hooks.json）。敏感裁决见 ADAS-ASSIST-MAP §115 忽略行。生成于 2026-09-25 资产管控全面批。；随 settings.json 结构性变更时同步本模板（2026-09-25 补）",
   "attribution": {
     "commit": "",
     "pr": ""

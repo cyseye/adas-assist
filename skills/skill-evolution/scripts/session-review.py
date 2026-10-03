@@ -25,7 +25,7 @@
   (8) 地图计数族（2026-09-03 接入）：README/KNOWLEDGE 尾注声明计数 vs 目录实测——窄版
       白名单锚点（固定句式 + HTML 计数注释，日期锚快照句不对账），低风险机械回填
 
-PENDING 按信号类型建议触发对应单 skill（不全链 agentos-loop），下次会话主控提示用户确认。
+PENDING 按信号类型建议触发对应单 skill（不全链 adas-assist-loop），下次会话主控提示用户确认。
 约束：Stop hook 只能跑命令不能调 skill，故只产建议清单，执行需用户确认
 （守 skill-evolution「不自动改 skill」克制哲学——自发现自动，自改进半自动）。
 """
@@ -1050,7 +1050,7 @@ def scan_map_counts(asset: Path, proj: Path) -> list[dict]:
     suggest 值 `sync-map-counts` 是直消标签（分组头展示用），非 skill 路由名。
     迁移后跨仓计数：asset=资产 .claude 目录本身；proj=项目 .claude 等价目录
     （调用方传 PROJ/".claude"）。skills 对账仅 asset 仓（README 锚点只声明
-    agentos 单仓，项目仓 qualitative，2026-09-19 W2 口径定版）；
+    adas-assist 单仓，项目仓 qualitative，2026-09-19 W2 口径定版）；
     agents/adr/README/KNOWLEDGE 在资产仓；standards 在项目仓。
     """
     signals = []
@@ -1083,7 +1083,7 @@ def scan_map_counts(asset: Path, proj: Path) -> list[dict]:
             n_mcp = len(cj.get("mcpServers", {}))
         except Exception:
             n_mcp = -1
-        n_launchd = len(list(Path.home().joinpath("Library/LaunchAgents").glob("com.agentos.*.plist"))) if Path.home().joinpath("Library/LaunchAgents").is_dir() else -1
+        n_launchd = len(list(Path.home().joinpath("Library/LaunchAgents").glob("com.adas-assist.*.plist"))) if Path.home().joinpath("Library/LaunchAgents").is_dir() else -1
         text = readme.read_text(encoding="utf-8")
         for pat, actual, label in (
                 (r"skills (\d+) 个 skill 目录", n_skills, "skills"),
@@ -1103,8 +1103,8 @@ def scan_map_counts(asset: Path, proj: Path) -> list[dict]:
                     signals.append({"type": "map-count-drift",
                                     "edge": f"README {label} 声明 {m}≠实测 {actual}",
                                     "suggest": "sync-map-counts"})
-        # 复合计数边已随 W2 口径定版删除（README 不再声明「N = agentos A + harness H」
-        # 和式；项目仓 skill 数 qualitative 化，见 AGENTOS-MAP §六兜底声明）
+        # 复合计数边已随 W2 口径定版删除（README 不再声明「N = adas-assist A + harness H」
+        # 和式；项目仓 skill 数 qualitative 化，见 ADAS-ASSIST-MAP §六兜底声明）
     # KNOWLEDGE 尾注计数锚点（dual-domain-taxonomy：adr-index 已废，锚点迁此；
     # decisions-tiered-versioning：archive 域取消，锚点两数化）
     kt_path = asset / "decisions" / "KNOWLEDGE.md"

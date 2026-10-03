@@ -8,7 +8,7 @@
 | 规则 | 说明 |
 |------|------|
 | 语义 kebab，**禁数字编号** | 文件名 = 业务语义的小写连字符 slug（`skill-evolution-spiral-loop.md`）；不使用 NNNN 序号前缀——编号无语义且引入单调递增/不复用等治理负担 |
-| 目录即业务域 | 分类靠目录承载（ADR 库 meta/data 双域 + postmortems/；skill 本地 `decisions/` 子目录（本地不进版本控制）与 `project-docs/common/` 同规）；文件名不再重复目录词（`decisions/fixer-public-agent.md` 而非 `decisions/design-fixer-*.md`）——域词属专名（agentos-loop）或主题核心词（删后语义泛化）时保留 |
+| 目录即业务域 | 分类靠目录承载（ADR 库 meta/data 双域 + postmortems/；skill 本地 `decisions/` 子目录（本地不进版本控制）与 `project-docs/common/` 同规）；文件名不再重复目录词（`decisions/fixer-public-agent.md` 而非 `decisions/design-fixer-*.md`）——域词属专名（adas-assist-loop）或主题核心词（删后语义泛化）时保留 |
 | slug 全局唯一 | 新建时 grep 查重；撞名换更精确语义词重试（≤3 次） |
 | 文件名即唯一标识 | frontmatter 不设 id 字段；互链/引用（supersedes/superseded_by/related_*/postmortem_id/正文引用）一律用 slug |
 | 单一最终版 | 禁文件名版本后缀（.vN）——版本走 frontmatter，项目文档历史靠 git（[knowledge-doc-governance-consolidation](../../decisions/adr/meta/knowledge-doc-governance-consolidation.md)） |

@@ -1,6 +1,6 @@
-# agentos-lite 用户级指引
+# adas-assist 用户级指引
 
-本仓是 agentos-lite 元层体系：保留自进化闭环（反射层 hooks+进化宿主）、决策体系（三件+explore/consensus/lifecycle/devils-panel 配套）与治理族瘦身五件。
+本仓是 adas-assist 元层体系：保留自进化闭环（反射层 hooks+进化宿主）、决策体系（三件+explore/consensus/lifecycle/devils-panel 配套）与治理族瘦身五件。
 
 - **体系定位与架构图**：`README.md`
 - **决策唯一索引**：`decisions/KNOWLEDGE.md`；进化宿主：`skills/skill-evolution/`（SKILL.md+反射层 scripts）

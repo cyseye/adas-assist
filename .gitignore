@@ -1,4 +1,4 @@
-# agentos-lite 分发仓 .gitignore（白名单式思路：运行时数据不入库）
+# adas-assist 分发仓 .gitignore（白名单式思路：运行时数据不入库）
 
 # Python
 __pycache__/

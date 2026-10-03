@@ -12,7 +12,7 @@ description: "执行完成检查收尾/交付前检查门，三档+real-run 免�
 >
 > 定位：与 verify（P4 单产物对规范红蓝验证）/ improve（P5 事后复盘）正交——交付前时点、表达+抽取+提交+跨任务一致性维度、检查报告+提议产物，三轴均不同；与 verify 重叠时标记后 handoff 深验，不重复验证。
 >
-> scope：编排层（无固定测试集），自身不接入 skill-evolution；与 flow-dev 同构的转交契约/门控写法暂不抽 `_shared`（守克制，第 4 编排 skill 或同构维护痛点时立项 ADR）。agentos 仓成员（2026-09-12 迁入，ADR test-system-regroup）：检查依据走双根协议——standards/project-rules/rule-registry 等按 cwd 解析当前项目 `.claude/` 下对应文件。
+> scope：编排层（无固定测试集），自身不接入 skill-evolution；与 flow-dev 同构的转交契约/门控写法暂不抽 `_shared`（守克制，第 4 编排 skill 或同构维护痛点时立项 ADR）。adas-assist 仓成员（2026-09-12 迁入，ADR test-system-regroup）：检查依据走双根协议——standards/project-rules/rule-registry 等按 cwd 解析当前项目 `.claude/` 下对应文件。
 
 ## 运行约定
 
@@ -97,7 +97,7 @@ description: "执行完成检查收尾/交付前检查门，三档+real-run 免�
 | B2 串联功能 | 需串联未串联（跨任务断链） | `responsibility-split.md` |
 | B3 上下文一致 | 跨任务/跨模块上下文一致（verify 是单产物视角，本 skill 跨任务） | — |
 | B4 逻辑闭环 | 跨功能逻辑闭环（verify 是单产物状态机，本 skill 跨功能）；文档指针目标存在性（§锚点/脚本路径/编号锚 grep 核验，防收敛后指针悬空）；机械预筛可选=`~/data/tools/nodetools/node_modules/.bin/remark --quiet --use remark-validate-links <files>`（仓内相对路径核验，2026-10-01 引入，外链禁用） | — |
-| B5 commit 规范 | commit 消息是否符合 commit-conventions.md 格式（type/scope/subject） | 当前项目 `standards/common/commit-conventions.md`（双根；**条件件**——agentos 元层仓无此件，仅项目仓存在时检，元层仓 B5 跳过如实报，2026-09-26 finish-check 实证断链勘误） |
+| B5 commit 规范 | commit 消息是否符合 commit-conventions.md 格式（type/scope/subject） | 当前项目 `standards/common/commit-conventions.md`（双根；**条件件**——adas-assist 元层仓无此件，仅项目仓存在时检，元层仓 B5 跳过如实报，2026-09-26 finish-check 实证断链勘误） |
 
 > **边界**：A3/B3/B4 与 verify 视角不同（单产物对规范 vs 跨任务交付），重叠时 handoff 深验（见开头定位）。B5 检查逻辑：从 `git log -1 --pretty=%B` 获取最新 commit 消息，解析 type/scope/subject 是否符合格式，不符合标记为 P2（轻修复）。
 

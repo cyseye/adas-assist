@@ -1,13 +1,13 @@
 ---
-description: agentos 自主进化快捷入口——多方向进化轮（正向/逆向/减负/联审/外参/决策/自审/画像/状态/all）
+description: adas-assist 自主进化快捷入口——多方向进化轮（正向/逆向/减负/联审/外参/决策/自审/画像/状态/all）
 argument-hint: "[方向: 正向|逆向|减负|联审|外参|决策|自审|画像|状态|all] (缺省=按信号分档轻量轮)"
 ---
 
-# /evolve — agentos 自主进化快捷入口
+# /evolve — adas-assist 自主进化快捷入口
 
 参数：$ARGUMENTS
 
-你是 agentos 体系的中控（Boss=主模型调度）。按下面路由执行进化轮，全程遵守 `skills/_shared/evolution-discipline.md`（进化周期三档+信号消化分级）与 `io-budgets` 预算。本指令缺省路径是轻量档（本仓无战役机制，全力档=多 Explore 并行）。
+你是 adas-assist 体系的中控（Boss=主模型调度）。按下面路由执行进化轮，全程遵守 `skills/_shared/evolution-discipline.md`（进化周期三档+信号消化分级）与 `io-budgets` 预算。本指令缺省路径是轻量档（本仓无战役机制，全力档=多 Explore 并行）。
 
 ## 路由表（按参数分发，可组合）
 

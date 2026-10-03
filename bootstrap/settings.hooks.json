@@ -1,5 +1,5 @@
 {
-  "$comment": "agentos-lite 反射层 hooks 接线模板——新机接入用：把本文件的 hooks 键合并进 ~/.claude/settings.json（jq -s '.[0] * .[1]' ~/.claude/settings.json bootstrap/settings.hooks.json，在仓根执行；合并前先备份原文件）。command 用 $HOME 展开跨用户名。env/apiKeyHelper/statusline 等本机配置不在本模板，按新机实际情况自配。",
+  "$comment": "adas-assist 反射层 hooks 接线模板——新机接入用：把本文件的 hooks 键合并进 ~/.claude/settings.json（jq -s '.[0] * .[1]' ~/.claude/settings.json bootstrap/settings.hooks.json，在仓根执行；合并前先备份原文件）。command 用 $HOME 展开跨用户名。env/apiKeyHelper/statusline 等本机配置不在本模板，按新机实际情况自配。",
   "hooks": {
     "PreToolUse": [
       {"matcher": "Bash", "hooks": [

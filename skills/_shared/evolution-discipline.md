@@ -84,7 +84,7 @@
 
 | 档 | 周期 | 内容 | 产物/消费 |
 |---|------|------|----------|
-| 日档（小） | 每日 22:35 weekly-eval launchd 串联第二程（daily-archive.py）承载（2026-09-26 勘误：原「03 点独立 cron」不存在，周期任务唯一读口=AGENTOS-MAP §七），零模型 | 心跳扫描：PENDING 计数+超线+联审到期；机械归档项（轮转核查/断链 grep/.state 清理提示）无条件执行。模型小任务不进日档：模型项挂周批 low 档；「半夜整理归档」以纯脚本形态承载（2026-09-27），模型窗立项须先 decision-record 翻案本行+≥2 次真实积压证据 | `.build/evolution-daily.log` 一行/日，仅落盘零注入 |
+| 日档（小） | 每日 22:35 weekly-eval launchd 串联第二程（daily-archive.py）承载（2026-09-26 勘误：原「03 点独立 cron」不存在，周期任务唯一读口=ADAS-ASSIST-MAP §七），零模型 | 心跳扫描：PENDING 计数+超线+联审到期；机械归档项（轮转核查/断链 grep/.state 清理提示）无条件执行。模型小任务不进日档：模型项挂周批 low 档；「半夜整理归档」以纯脚本形态承载（2026-09-27），模型窗立项须先 decision-record 翻案本行+≥2 次真实积压证据 | `.build/evolution-daily.log` 一行/日，仅落盘零注入 |
 | 周档（大） | 每周日锚 | 周评估三指标+战略对账+批次统筹消化（low 自动/mid 批量确认；High 一律落 PENDING 待用户确认，禁自动改）。**进化批待办**（2026-09-27）：超线信号>0 时 weekly-eval.py 在报告追加「进化批待办」行（带周期锚日期），执行者=下次会话主控消费周报时按托管语义跑 `/evolve all`（L2）；去重走 `evolution-batch.marker`（消费即重置，joint-review.marker 同构），防重复跑；与后台分析段分工=分析段诊断、/evolve all 消化动作，同一信号不双消费 | weekly-eval-report.md；主控消化后 touch marker |
 | 决策档 | 14 天窗口 | 高风险信号攒批一次 AskUser（批次门一次 multiSelect） | 三入口（2026-09-27 增补第三）：session-start 指针 + 用户指令 + `/evolve 决策` 手动拉起（同一 multiSelect 门，不建第二确认面；ADR evolution-cadence-tiers 追加节登记） |
 | 外参节律 | 周批（last-external-action marker 到期判定，「本周期」=自 marker 日期起算） | `/evolve 状态` 资讯扫描为唯一轻量通道；到期未执行时零模型脚本仅在周报加「外参扫描待办」行，扫描由下次会话主控执行（low 档机械入 PENDING，过外参准入（协议本仓未包含，主控按证据链硬门自审））；条目攒 ≥5 条或命中深探触发词升 §9.2 深探 | marker+PENDING 外参条目；深探产物按准入落库 |
