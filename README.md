@@ -1,10 +1,10 @@
-# adas-assist（极简版）
+# adas-assist
 
-adas-assist：面向 Claude Code 的自进化元层体系**精简版**——保留自进化闭环（反射层八脚本+进化宿主）、决策体系（record/verify/improve 三件+explore/consensus/lifecycle/devils-panel 配套）与治理族瘦身五件。clone 即用，零本机基建依赖。
+adas-assist：面向 Claude Code 的自进化元层体系：保留自进化闭环（反射层八脚本+进化宿主）、决策体系（record/verify/improve 三件+explore/consensus/lifecycle/devils-panel 配套）与治理族五件。clone 即用，零本机基建依赖。
 
 ## 项目定位
 
-- 本仓 = 聚焦核心闭环的精简收窄版，**只留重点功能**（见下「已裁剪清单」）。
+- 本仓 = 聚焦核心闭环，**只保留重点功能**（见下「已裁剪清单」）。
 - 架构图（三块）：
 
 ```
@@ -59,14 +59,14 @@ memory/              用户画像（运行时数据，不入库）
 
 ## 已裁剪能力清单
 
-### 极简轮裁剪（2026-10-01，本次）
+### 本轮裁剪（2026-10-01）
 
 | 能力 | 状态 |
 |---|---|
 | rules/ 全局常驻规则四件（表达/工程/调研/触发映射） | 删；个人风格件非重点功能 |
 | agents/ 扩展成员（审计族/task-driver 等治理编排 agent） | 删；仅留 PCF 三件套+review-rule（skill 内引用，主控 Read 后自演不按名 spawn） |
 | BLUEPRINT.md 战略蓝图 | 删 |
-| 治理族 skill（model/session-search/arch-governance 等 7 件） | 删；io/effect/memory/info/finish-check 五件随仓（脚本瘦身版，未随仓脚本已在 SKILL.md 标注人工口径） |
+| 治理族 skill（model/session-search/arch-governance 等 7 件） | 删；io/effect/memory/info/finish-check 五件随仓（未随仓脚本已在 SKILL.md 标注人工口径） |
 | decision-explore/consensus/lifecycle/devils-panel | 随仓保留（决策体系配套）；重度编排（PCF spawn 链）主控自演 |
 | 反射层扩展脚本（compact-events/daily-archive/usage-stats/g1-outbound-guard/collect-all-tools/surge-stop-gate 等） | 删；只留八脚本（含 cc-commit-gate/t38-settings-guard） |
 | os-report 快捷入口 / commands 扩展 | 删 |
