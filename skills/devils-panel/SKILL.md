@@ -82,5 +82,5 @@ Phase 清单：0 召回+定档 → Round 1 正方→反方 → Round 2（仅 L3�
 | `references/adversary-roles-protocol.md` | 角色协议 + prompt 模板 |
 | `references/integration-mapping.md` | 接入点映射 + 调用逻辑 + 复杂度分级 + 执行流详版伪代码（canonical） |
 | `templates/adversary-report.json` / `adversary-summary.json` | 报告/追踪 schema |
-| `decision-consensus/references/convergence-rules.md` | deadlock 检测（未包含，主控按 2 轮无收敛即 deadlock 自裁） |
+| `decision-consensus/references/convergence-rules.md` | deadlock 检测（随仓复用） |
 | `standards/common/knowledge-protocol.md` | 知识索引协议 |

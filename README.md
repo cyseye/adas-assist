@@ -70,9 +70,10 @@ memory/              用户画像（运行时数据，不入库）
 | decision-explore/consensus/lifecycle/devils-panel | 随仓保留（决策体系配套）；重度编排（PCF spawn 链）主控自演 |
 | 反射层扩展脚本（compact-events/daily-archive/usage-stats/g1-outbound-guard/collect-all-tools/surge-stop-gate 等） | 删；只留八脚本（含 cc-commit-gate/t38-settings-guard） |
 | os-report 快捷入口 / commands 扩展 | 删 |
-| 脚本 io-audit/model-call-audit/retention-gc | 删；只留 adr-mdcheck.py |
+| 脚本 io-audit/model-call-audit/retention-gc/meta-regression/glm-pollution-probe/finish_check/expression-eval/rules_audit/worktree-evolve.sh | 删；脚本只留 adr-mdcheck.py |
+| 数据件 skill-evolution/registry/token-baseline.json（expect/measured 台账） | 删；主控按周评估报告对账 |
 | standards 扩展（skill-design/skill-naming/automation-protocol/cache-hygiene/model-governance） | 删 |
-| _shared 扩展协议（org-formations/pattern-router/pcf-execution-flow/review-gate-skeleton 等） | 删 |
+| _shared 扩展协议（org-formations/pattern-router/pcf-execution-flow/review-gate-skeleton/handoff-modes/assessment-protocol/socratic-inquiry/investment-committee/quota-tracker，及触发路由表、表达体系规范） | 删 |
 | io-budgets.json 无读者键组（session_relay/compaction_tiers/main_tier_drift/bash_output 等） | 删，保持 JSON 合法 |
 
 ### 首轮分发裁剪（沿用）
