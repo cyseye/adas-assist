@@ -1,0 +1,57 @@
+{
+  "check_id": "fc-{YYYYMMDD}-{slug}",
+  "target": "产物路径或 git 未push+已提交范围",
+  "tier": "quick|standard|full",
+  "checklist": "A|B|both",
+  "status": "pass|pass_with_flags|fixable|critical",
+  "rounds_used": 0,
+  "dimensions": [
+    {
+      "id": "A1",
+      "name": "冗余无效清理",
+      "score": 0,
+      "weight": 0.25,
+      "findings_count": 0
+    }
+  ],
+  "total_score": 0,
+  "findings": [
+    {
+      "id": "FC-A01",
+      "dimension": "A1",
+      "severity": "BLOCKER|MAJOR|MINOR",
+      "desc": "问题描述",
+      "evidence": "文件:行 / 引用",
+      "propose": "修复提议（MAJOR/MINOR 经主控复核后可入 fix_proposals）"
+    }
+  ],
+  "fix_proposals": [
+    {
+      "from_finding": "FC-A01",
+      "file": "相对路径",
+      "action": "一句话修复动作（≤5 处、文档/注释级）",
+      "verify": "grep 复验关键词"
+    }
+  ],
+  "summary": {
+    "total": 0,
+    "by_severity": {
+      "BLOCKER": 0,
+      "MAJOR": 0,
+      "MINOR": 0
+    },
+    "must_fix_count": 0
+  },
+  "pcf": {
+    "triggered": false,
+    "trigger_reason": "CRITICAL|plateau|over_rounds|reviewer_dispute|none",
+    "decision": "fix_targeted|accept_with_flags|escalate_to_user|none",
+    "residual_risks": []
+  },
+  "handoff": {
+    "proposed_skill": "verify|improve|record|fix|audit|null",
+    "reason": "转交理由",
+    "evidence_refs": [],
+    "propose_trigger": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "skill": "decision-verify",
+  "target": {"type": "code", "path": "src/Order.ts", "object_type_source": "auto"},
+  "verification": {
+    "status": "pass",
+    "tier": "quick | standard | full",
+    "final_score": 92.0,
+    "rounds_used": 3,
+    "dimensions": {
+      "正确性": {"score": 90, "p0": 1, "p1": 2, "weight": 0.40},
+      "安全性": {"score": 95, "p0": 0, "p1": 1, "weight": 0.30},
+      "规范性": {"score": 92, "p0": 0, "p1": 1, "weight": 0.20},
+      "完整性": {"score": 100, "p0": 0, "p1": 0, "weight": 0.10}
+    },
+    "score_history": [75, 88, 92],
+    "must_fix_count": 0,
+    "pcf_triggered": false,
+    "pcf_decision": "pass"
+  },
+  "red_team": {"agent": "review-rule", "issues_found": 8, "issues_fixed": 7},
+  "blue_team": {"agent": "exec-review-fixer-blue", "fixed_count": 7, "skipped_count": 1},
+  "defect_rates": {"pre_fix_rate": 0.32, "post_fix_rate": 0.04, "fix_rate": 0.875, "regression_rate": 0.0},
+  "unresolved": [],
+  "handoff": {
+    "proposed_skill": "decision-improve | decision-record | null",
+    "reason": "must_fix>0 | systemic | recurrence | pass_with_arch_decision",
+    "evidence_refs": ["issue/裁决要点引用"],
+    "propose_trigger": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "skill": "decision-lifecycle",
+  "target_skill": "example-skill",
+  "signal": {
+    "type": "split",
+    "evidence": [
+      "同类 prompt 重复 4 次，无现成 skill 覆盖",
+      "SKILL.md 达 180 行且难精简",
+      "含 2 个独立触发条件，职责边界模糊"
+    ]
+  },
+  "gate": {
+    "threshold_met": true,
+    "reason": "复用率≥2 / 拆后各 skill 可测且 metrics 不降 / 触发条件清晰 均达标",
+    "risk": "high"
+  },
+  "pcf": {
+    "triggered": true,
+    "decision": "approve",
+    "confidence": "medium"
+  },
+  "verdict": "建议拆分",
+  "action": "克制：仅建议，等用户确认后落地拆分（拆分执行交 dev-* 流程或人工）",
+  "residual_risks": [
+    "拆分后初期路由需用户重新习惯",
+    "两个子 skill 的 metrics baseline 需重新建立"
+  ]
+}

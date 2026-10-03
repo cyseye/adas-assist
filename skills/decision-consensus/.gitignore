@@ -1,0 +1,2 @@
+# consensus 中间轮次产物 + evolve.py 本地数据源（磁盘保留、不入库）
+.build/

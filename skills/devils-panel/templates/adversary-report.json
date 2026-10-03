@@ -1,0 +1,59 @@
+{
+  "target": "",
+  "change_type": "",
+  "adversary_mode": "protagonist-antagonist-referee",
+  "timestamp": "",
+  "rounds": 0,
+  "final_verdict": "approve|reject|compromise",
+  "protagonist_summary": {
+    "key_arguments": [
+      {
+        "point": "",
+        "rationale": "",
+        "evidence": []
+      }
+    ],
+    "benefits": [],
+    "feasibility": {
+      "implementation_path": "",
+      "rollback_plan": "",
+      "risks_mitigation": []
+    },
+    "confidence": "high|medium|low"
+  },
+  "antagonist_summary": {
+    "key_challenges": [
+      {
+        "target_argument": "",
+        "challenge": "",
+        "severity": "high|medium|low",
+        "rationale": ""
+      }
+    ],
+    "risks": [
+      {
+        "type": "",
+        "description": "",
+        "mitigation": ""
+      }
+    ],
+    "alternative": "",
+    "confidence": "high|medium|low"
+  },
+  "unresolved_issues": [
+    {
+      "issue": "",
+      "protagonist_stance": "",
+      "antagonist_stance": ""
+    }
+  ],
+  "referee_rationale": "",
+  "compromise_conditions": [],
+  "linked_adr": "",
+  "metrics": {
+    "rounds_to_convergence": 0,
+    "issues_raised": 0,
+    "issues_resolved": 0,
+    "consensus_score": 0
+  }
+}

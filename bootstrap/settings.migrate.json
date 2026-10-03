@@ -1,0 +1,165 @@
+{
+  "$comment": "迁移模板：新机以此为基础重建 settings.json（凭据占位须手填，hooks 单源 bootstrap/settings.hooks.json）。敏感裁决见 AGENTOS-MAP §115 忽略行。生成于 2026-09-25 资产管控全面批。；随 settings.json 结构性变更时同步本模板（2026-09-25 补）",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "autoCompactEnabled": true,
+  "autoCompactWindow": 280000,
+  "autoMemory": true,
+  "autoMemoryEnabled": true,
+  "autoUpdatesChannel": "stable",
+  "bashOutputMaxChars": 12000,
+  "cleanupPeriodDays": 7,
+  "editorMode": "normal",
+  "effortLevel": "medium",
+  "enabledPlugins": {
+    "chrome-devtools-mcp@claude-plugins-official": false,
+    "figma@claude-plugins-official": false,
+    "jdtls-lsp@claude-plugins-official": true,
+    "playwright@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "env": {
+    "AI_AGENT": "claude-code",
+    "ANTHROPIC_AUTH_TOKEN": "<凭据见本地，勿入库>",
+    "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
+    "ANTHROPIC_DEFAULT_FABLE_MODEL": "glm-5.3-flash[1M]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5.3-flash",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.3[1M]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.3-flash[1M]",
+    "ANTHROPIC_MODEL": "glm-5.3-flash[1M]",
+    "API_TIMEOUT_MS": "600000",
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "glm-5.3-flash[1M]",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_TELEMETRY": "1",
+    "FORCE_AUTOUPDATE_PLUGINS": "true",
+    "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+    "PATH": "/opt/homebrew/opt/maven/bin:/opt/homebrew/opt/openjdk@21/bin:~/.local/bin:/Library/Frameworks/Python.framework/Versions/3.13/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "TZ": "UTC"
+  },
+  "fileCheckpointingEnabled": true,
+  "language": "chinese",
+  "modelSettings": {
+    "glm-5.3": {
+      "effortLevel": "high"
+    },
+    "glm-5.3-flash": {
+      "effortLevel": "low"
+    }
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(stat:*)",
+      "Bash(echo:*)",
+      "Bash(date:*)",
+      "Bash(diff:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(which:*)",
+      "Bash(ps:*)",
+      "Bash(docker:*)",
+      "Bash(/opt/homebrew/bin/docker:*)",
+      "Bash(colima:*)",
+      "Bash(/opt/homebrew/bin/colima:*)",
+      "Bash(limactl:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(sed:*)",
+      "Bash(shasum:*)",
+      "Bash(curl http://127.0.0.1:*)",
+      "Bash(curl https://hf-mirror.com/*)",
+      "Bash(curl -s* http://127.0.0.1:*)",
+      "Bash(curl -s* https://hf-mirror.com/*)"
+    ],
+    "defaultMode": "bypassPermissions",
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(git push -f*)",
+      "Bash(git push --force*)",
+      "WebSearch",
+      "WebFetch",
+      "mcp__web_reader__webReader"
+    ],
+    "additionalDirectories": [
+      "~/data",
+      "/tmp"
+    ]
+  },
+  "precomputeCompactionEnabled": true,
+  "preferredNotifChannel": "iterm2",
+  "respectGitignore": true,
+  "showTurnDuration": true,
+  "skillListingMaxDescChars": 400,
+  "skillOverrides": {
+    "claude-api": "off",
+    "dataviz": "off",
+    "delegate": "user-invocable-only",
+    "fewer-permission-prompts": "off",
+    "keybindings-help": "off",
+    "loop": "off",
+    "run": "off",
+    "security-review": "off",
+    "workflow-authoring": "off"
+  },
+  "skipAutoPermissionPrompt": true,
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "statusLine": {
+    "command": "bash ~/.claude/statusline-command.sh",
+    "type": "command"
+  },
+  "switchModelsOnFlag": false,
+  "taskOutputMaxChars": 16000,
+  "theme": "light",
+  "tui": "fullscreen",
+  "viewMode": "focus",
+  "sandbox": {
+    "enabled": true,
+    "excludedCommands": [
+      "docker *",
+      "/opt/homebrew/bin/docker *",
+      "colima *",
+      "/opt/homebrew/bin/colima *",
+      "limactl *"
+    ],
+    "filesystem": {
+      "allowWrite": [
+        "/tmp",
+        "~/data",
+        "~/.claude"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "hf-mirror.com",
+        "huggingface.co",
+        "ghcr.io",
+        "*.docker.io",
+        "*.githubusercontent.com",
+        "open.bigmodel.cn"
+      ],
+      "allowLocalBinding": true
+    }
+  }
+}

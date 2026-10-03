@@ -1,0 +1,33 @@
+{
+  "round": 1,
+  "proposals": [
+    {
+      "role": "架构",
+      "proposal": "采用 Redis 作为分布式缓存，复用现有 Redis 基础设施，支持多实例共享与水平扩展",
+      "rationale": "资源看板服务已多实例部署，本地缓存存在数据不一致风险；Redis 与现有微服务架构契合，缓存失效可集中控制",
+      "confidence": "medium"
+    },
+    {
+      "role": "性能",
+      "proposal": "采用本地缓存（Caffeine）作为一级、Redis 作为二级，读优先走本地以降低网络往返延迟",
+      "rationale": "看板以高频读为主，本地缓存命中延迟 <1ms，Redis 网络 RTT 通常 1-3ms；纯 Redis 方案在 P99 延迟上不占优",
+      "confidence": "medium"
+    },
+    {
+      "role": "成本",
+      "proposal": "采用本地缓存，避免新增 Redis 容量与运维开销，缓存数据量可控无需分布式存储",
+      "rationale": "资源看板缓存数据量预估 <500MB，单机内存可承载；Redis 扩容与监控会增加运维成本，性价比不高",
+      "confidence": "low"
+    }
+  ],
+  "consensus_points": [
+    "缓存是必要的，现状每次查询直击 DB 已成瓶颈",
+    "缓存键需按资源维度（租户+资源类型）隔离，避免跨租户串数据",
+    "需设置 TTL 过期并做缓存预热，避免冷启动雪崩"
+  ],
+  "divergences": [
+    "缓存介质选择：架构主张 Redis，性能主张本地+Redis 两级，成本主张纯本地",
+    "多实例数据一致性策略：Redis 集中失效可控 vs 本地缓存需广播失效"
+  ],
+  "convergence_score": 60
+}

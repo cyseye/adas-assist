@@ -1,0 +1,111 @@
+{
+  "_comment": "运行治理部 IO 组数值单源（io-governance 唯一写者）；hook 脚本与 skill 引用此处数值禁止复写。改数值走 io-governance 裁决并在 _history 登记一行。管辖范围=被脚本读取或约束脚本行为的预算键；文本副本类硬数值不经此单源判定（见 on_read_fail_semantics 元条款）。",
+  "on_read_fail_semantics": {
+    "_meta": "per-key 读失败三态语义表（campaign-20260916 簇2 批次1）：SKIP=缺读静默跳过增益行为｜TIGHT=缺读按最严执行（截断/上限类禁放行）｜MAIN=执法时刻在主控编排，hook 不中介只事后留痕。**默认规则：本文件未列于 _exceptions 的键一律 MAIN**。元条款：无 on_read_fail 语义的键不得新增脚本读者；cc-switch 读取链路为元条款首管对象。写者=io-governance，读者=knowledge-recall/session-start/weekly-eval",
+    "_exceptions": {
+      "recall_injection.*": "SKIP",
+      "pending_injection.max_lines": "TIGHT",
+      "pending_injection.digest_days": "TIGHT",
+      "pending_injection.muted_after_reminds": "SKIP",
+      "weekly_report.*": "SKIP",
+      "weekly_eval_refs.recall_floor/annoy_ceil/convert_floor": "SKIP+留痕",
+      "weekly_eval_refs.avg_session_io_token/main_model_session_share": "SKIP",
+      "self_evolution_round.max_spawns_per_round/pcf_round_max/audit_class_share_max": "MAIN+TIGHT",
+      "subagent_context_fuse.max_rounds/max_single_input_tokens": "MAIN+TIGHT"
+    }
+  },
+  "recall_injection": {
+    "max_items": 2,
+    "summary_max_chars": 80,
+    "fold_threshold_per_7d": 3,
+    "note": "knowledge-recall 每次注入上限；召回门槛 score≥4 同步裁决见脚本 knowledge-recall.py（两处同改义务）。回归修复史：2026-09-25 D-C2 批整对象替换误删 max_items/summary_max_chars 致 fail-closed 全量漏召（7b9c3cd 引入），2026-09-26 并回两键（与 bfe806e 逐字节同值）+保留 fold_threshold_per_7d；教训=改单源 JSON 禁整对象替换，须读-改-写合并；fold 10→3（2026-09-29 性价比轮，recall-throttle-20260929：15h 实测消除 338 次全量注入≈297 注入当量，fold=5 仅 187；回归判据=selftest 8/8+真 hook 高频折叠正反臂+事件留痕照常）"
+  },
+  "pending_injection": {
+    "max_lines": 50,
+    "muted_after_reminds": 3,
+    "digest_days": 7,
+    "note": "session-start PENDING 截断与狼来了折叠；digest_days=注入节流窗口（积压归定期批次统筹消化，非每会话展开）"
+  },
+  "weekly_report": {
+    "max_lines": 23,
+    "throttle_days": 7,
+    "analysis_max_lines": 6,
+    "note": "weekly-eval-report 行数与节流（23 为 2026-09-28 定版时分解：三旧指标行+两新指标行+mcp 读口 1 行，后 T96 接线增 compact-events 报行；两值 weekly-eval 均经 io_budget() 动态读，本注记仅口径存档非执法源）；analysis_max_lines=后台模型分析段上限（无超线零调用）〔2026-09-29 T96 残余文案回改，数值未动〕"
+  },
+  "spawn_prompt": {
+    "max_lines": 100,
+    "inline_exception": "≤1 段话小输入；>100 行回落 .build 文件传路径"
+  },
+  "subagent_return": {
+    "risks_max": 3,
+    "inline_findings_max_lines": 15,
+    "read_files_required": true,
+    "note": "schema 正文唯一单源=skills/_shared/io-protocol.md §3（2026-09-27 消双单源：schema 残键副本已删，C13 断言改读 §3；各消费方指针已切，read_files 已回灌 §3）；本键仅承载参数值 risks_max/inline_findings_max_lines/read_files_required。2026-09-19 增 read_files（P2 立项）：OverclaimBench arXiv 2609.20812 实证 67.9% 运行未读全应读文件且 80.4% 回传误导、虚报者漏缺陷率 1.8×——审计/核验类 spawn 回传必附已读文件清单，只读探查类可附 top 文件。"
+  },
+  "ask_user": {
+    "max_questions_per_batch": 4,
+    "max_batches": 3
+  },
+  "_history": [
+    "2026-10-01 初始值：本机裁决流水已收敛"
+  ],
+  "weekly_eval_refs": {
+    "recall_floor": 0.3,
+    "annoy_ceil": 0.15,
+    "convert_floor": 0.2,
+    "note": "周评估指标参考线单源（weekly-eval.py 读此键；evolution-discipline/assessment-protocol 文字不复制数值）。两新键 null=观察期不判定，两周基线后由 io-governance 裁决填数",
+    "avg_session_io_token": null,
+    "main_model_session_share": null
+  },
+  "self_evolution_round": {
+    "max_spawns_per_round": 100,
+    "pcf_round_max": 3,
+    "uncached_input_ceiling": "2.5M/轮",
+    "throughput_ceiling": "80M/轮（含 cache_read 总吞吐；2026-09-27 榨干批 8M→80M，供应商硬顶仍是真约束）",
+    "window_budget_pct": "95%",
+    "gp_team_uncached_max": "150k/次",
+    "audit_class_share_max": "40%",
+    "note": "2026-09-13 消耗审计立项；2026-09-14 修订：cache_read 也占配额吞吐（分类器税 79% 实证），补吞吐口径两键；2026-09-27 修：值曾被并入 prose 致浮点解析炸→全臂 HOLD，值/note 分离回归（pcf 复测发现）。",
+    "_history_note": "写入走 io-governance 裁决"
+  },
+  "evolution_cadence": {
+    "daily_log": true,
+    "weekly_anchor": "sunday",
+    "decision_batch_window_days": 14,
+    "joint_review_window_days": 14,
+    "note": "进化三档周期单源：daily 日档日志/weekly 周日锚/joint_review 联审双周锚；调整统一走 io-governance；定版/叙事见 adr/meta/evolution-cadence-tiers.md",
+    "reflex_hooks_truncate_lines": 20000,
+    "reflex_hooks_rotate_lines": 20000,
+    "reflex_hooks_rotate_keep": 2,
+    "registry_rotate_lines": 50000,
+    "registry_rotate_bytes": 10485760,
+    "registry_rotate_keep": 3
+  },
+  "subagent_context_fuse": {
+    "max_rounds": 40,
+    "max_single_input_tokens": "100k",
+    "scope": "仅无状态可摘要接力任务；审查/裁决类重上下文任务禁拆",
+    "note": "2026-09-15 自项目 CLAUDE.md 上收单源（ADR adr/meta/subagent-context-fuse 条款数值化）"
+  },
+  "retrieval_budget": {
+    "scope": "内建 WebSearch/WebFetch/mcp__arxiv（如宿主可用）",
+    "quick": {
+      "searches_max": 5,
+      "fetches_max": 8
+    },
+    "full": {
+      "searches_max": 40,
+      "fetches_max": 80
+    },
+    "tier_grant": "quick=缺省（裸会话单点核证）；full=宿主显式声明，无独立判据（D4 裁决）；档=spawn prompt 单次注入单位（F8）；full 域聚合线 round_total=120；quick 5/8、full 40/80。",
+    "error_calls_free": true,
+    "arxiv_downloads_max": null,
+    "cache_dedup": null,
+    "review_days": 14,
+    "min_sample_n": 20,
+    "kill_criteria": "连续 90 天零检索调用（tool-calls.jsonl 全通道口径，存量判据防锯齿误杀 F1）→注销回推迟表",
+    "read_port": "skills/skill-evolution/registry/tool-calls.jsonl（PostToolUse 留痕口径非执法门；超限执法=主控显式声明留痕 F2）",
+    "note": "裁剪注：原定版 ADR 与已移除机制的配套键已一并裁剪；档位结构（quick/full/tier_grant）保留供内建通道计数。"
+  },
+  "_history_note": "初始值：历史账行已收敛。"
+}

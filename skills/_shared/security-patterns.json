@@ -1,0 +1,104 @@
+{
+  "_note": "安全敏感模式集单源（G1 出网门/G2 push 门共用；协议正文 standards/security-protocol.md 引用本件，勿在他处复制正则）。分级与白名单规则见协议。改动须附阳性对照（2026-09-20 P1 立件）。2026-09-21 P3 红队演练修订：home-path 去尾斜杠依赖（「/Users/名」无斜杠引用形态曾漏，P3 实锤）+新增 gitattr-escape（textconv/filter 持久扫描逃逸面，字符类写法防模式自匹配）；正文中类自指串用字符类伪装是立件惯例。",
+  "version": "2026-09-22",
+  "patterns": [
+    {
+      "id": "priv-ip-192",
+      "desc": "内网 IP 192.168.x.x",
+      "re": "192\\.168\\.\\d{1,3}\\.\\d{1,3}",
+      "level": "L2"
+    },
+    {
+      "id": "priv-ip-10",
+      "desc": "内网 IP 10.x.x.x",
+      "re": "\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b",
+      "level": "L2"
+    },
+    {
+      "id": "priv-ip-172",
+      "desc": "内网 IP 172.16-31.x.x",
+      "re": "\\b172\\.(1[6-9]|2\\d|3[01])\\.\\d{1,3}\\.\\d{1,3}\\b",
+      "level": "L2"
+    },
+    {
+      "id": "cred-bearer",
+      "desc": "Bearer 凭证串",
+      "re": "Bearer\\s+[A-Za-z0-9_\\-.]{16,}",
+      "level": "L2"
+    },
+    {
+      "id": "cred-openai",
+      "desc": "sk- 凭证串",
+      "re": "sk-[A-Za-z0-9]{20,}",
+      "level": "L2"
+    },
+    {
+      "id": "cred-github",
+      "desc": "ghp_/gho_ GitHub token",
+      "re": "gh[po]_[A-Za-z0-9]{20,}",
+      "level": "L2"
+    },
+    {
+      "id": "env-extract",
+      "desc": ".env 取值指引（cut/grep 提取）",
+      "re": "(cut|grep)[^|;]{0,40}\\.env",
+      "level": "L2"
+    },
+    {
+      "id": "home-path",
+      "desc": "用户私有路径（P3 修订：不要求尾斜杠；2026-09-22 心跳轮⑬ 红队复验批：用户名段放宽为大小写+非 ASCII——[a-z]{2,} 曾漏 /Users/CC 与非 ASCII 用户名，红队 P1/P15 实锤）",
+      "re": "/Users/[^\\s/]{2,}(?![A-Za-z])",
+      "level": "L2"
+    },
+    {
+      "id": "priv-path-home",
+      "desc": "2026-09-22 心跳轮⑬ T19 残留+红队复验批：symlink 目标私有路径零命中封堵——tilde/$HOME 形态私有目录引用（.ssh/.aws/.gnupg/.kube/.netrc/.zsh_history/.bash_history），相对与绝对引用皆拦；禁扩为任意 ~/. 点目录（误伤面不可控，另案 W2）",
+      "re": "(?:~|\\$\\{?HOME\\}?)/\\.(?:ssh|aws|gnupg2?|kube|netrc|zsh_history|bash_history)\\b",
+      "level": "L2"
+    },
+    {
+      "id": "priv-path-traverse",
+      "desc": "2026-09-22 心跳轮⑬ T19 残留+红队复验批：symlink 目标私有路径零命中封堵——相对遍历形态（../≥1 段可容多斜杠打断，接敏感目录名），git mode 120000 symlink blob 常见写法；单层 ../ 仅限枚举内敏感目录名（智能折中，../.github 等正常表述不误伤）",
+      "re": "(?:\\.\\.\\/+){1,}\\.(?:ssh|aws|gnupg2?|kube|netrc|zsh_history|bash_history)\\b",
+      "level": "L2"
+    },
+    {
+      "id": "priv-path-traverse-win",
+      "desc": "2026-09-22 轮①验证：反斜杠分隔的相对遍历形态（点、点，接分隔符，≥1 段可容多枚分隔符打断，接敏感目录名）——Windows 路径写法下的 T19 残留面，与 priv-path-traverse 的正斜杠形态互补；desc 禁写字面遍历示例防模式自绊。2026-09-22 轮③升级：容混合分隔符（14 应拦样本全命中）；绝对路径+混排回退尾（盘符前缀接遍历回退敏感目录类）改判应拦——与 priv-path-traverse 正斜杠版行为对齐",
+      "re": "(?:\\.\\.(?:[\\/\\\\])+){1,}\\.(?:ssh|aws|gnupg2?|kube|netrc|zsh_history|bash_history)\\b",
+      "level": "L2"
+    },
+    {
+      "id": "priv-path-keychains",
+      "desc": "2026-09-22 心跳轮⑬ 红队复验批：macOS 钥匙串目录（非 ~/. 点目录形态，独立子模式）——tilde/$HOME 与 /Users/<名> 绝对路径皆拦",
+      "re": "(?:~|\\$\\{?HOME\\}?|/Users/[^\\s/]{2,})/Library/Keychains\\b",
+      "level": "L2"
+    },
+    {
+      "id": "aws-access-key-id",
+      "desc": "AWS 访问密钥 ID（官方文档示例形态：AKIA/ASIA 前缀接 16 位大写字母数字；2026-09-22 轮③ 立件；desc 禁写字面示例 key 防自绊；禁用 cred- 前缀——cred- 触发 is_word_fused 后验，前邻字母粘连即被丢弃成逃逸道，红队实证）",
+      "re": "\\b(AKIA|ASIA)[0-9A-Z]{16}\\b",
+      "level": "L2"
+    },
+    {
+      "id": "gitattr-escape",
+      "desc": "gitattributes textconv/filter 指令——入库后可持续改写 diff 输出，属持久性扫描逃逸（lfs 除外）",
+      "re": "diff=textcon[v]|filter[=](hide|crypt|smudge|clean)",
+      "level": "L2"
+    }
+  ],
+  "whitelist": [
+    {
+      "id": "loopback-doc",
+      "desc": "127.0.0.1 裸址（不含 18xxx 端口）文档表述放行——本机回环非拓扑泄漏",
+      "added": "2026-09-20",
+      "rationale": "P1 阳性对照发现误伤面过大：回环地址属公开常识且 SKILL/协议多处以 127.0.0.1 表述本机服务；端口拓扑串仍拦"
+    },
+    {
+      "id": "loopback-port",
+      "desc": "127.0.0.1:18xxx 回环端口串放行",
+      "added": "2026-09-20",
+      "rationale": "回环端口仅本机可达,公开无攻击面增益;拦之=高误伤零收益(样子货)。真实拓扑泄漏面=内网IP(192.168/10/172)与凭证,均已拦"
+    }
+  ]
+}

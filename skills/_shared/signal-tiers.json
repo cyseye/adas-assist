@@ -1,0 +1,111 @@
+{
+  "_comment": "信号消化分级机器真值（仅列 low/mid，未列类型=高档；session-start.py 读取失败回退空集=全部按高档处理，无内联兜底）。canonical 文档 = _shared/evolution-discipline.md §信号消化分级（人类可读对照表）。新增信号类型须本文件与分级表两处同改，session-review.py 产出的类型名须可在此分级。`auto_whitelist` 为白名单激活后预留键名（autonomous-evolution-design 载体收口条款），未激活不添加。",
+  "low_risk_types": [
+    "baseline-gap",
+    "stale-eval",
+    "dead-skill",
+    "cold-skill",
+    "hot-skill",
+    "tracked-junk",
+    "untracked-report",
+    "adr-progression-review",
+    "adr-consistency",
+    "calibration-tier-quality",
+    "calibration-recall-quality",
+    "map-count-drift",
+    "memory-structure-drift"
+  ],
+  "mid_risk_types": [
+    "adr-governance-overdue",
+    "experience-summary-due",
+    "calibration-skill-triggers",
+    "skill-file-oversize",
+    "strategy-review-due"
+  ],
+  "strategy_review": {
+    "skill_total": 55,
+    "skill_meta": 25,
+    "meta_adr": 57,
+    "pending": 15,
+    "_note": "阈值单源（weekly-eval.py 读此键）。2026-09-16 定标=数据推导（adr-landing-loop-threshold-fix）：skill_meta=22（元层 skill 实测 18×1.2）；2026-09-20 重推 skill_meta=25（分母=skills 一级目录含 _shared 实测 21×1.2=25.2 round，消费者 weekly-eval.py iterdir 同口径；属 _note 预授权机械随动非重锚定）；meta_adr=57（38×1.5）维持不动——38→56 属治理决策暴涨后重锚，越出同式重推射程，重定标走 W2/新 ADR（2026-09-20 证伪裁决）；skill_total=55/pending=15 承原定标不涉该裁决（pending 量纲随 weekly-eval 计数锚迁 BACKLOG 待重定标，no_data）。后续调整按实测分母同式重推，改动在此单处。 2026-09-20 T10 预研补充：meta_adr 现值 57=触沿属设计压力非待修（57 门曾逼停 64 收敛，重锚即永久超线，禁动）；pending 量纲已迁 BACKLOG 存活项（历史 n=3 no_data，2026-10 底积累≥4 样本后重定标，禁静默承值）。"
+  },
+  "adr_governance": {
+    "limit_global": 24,
+    "limit_per_domain": 18,
+    "_note": "adr-governance-overdue 阈值单源（session-review.py 读此键，读取失败回退同值不降级）。口径=adr/ 双域直属件数（archive/ 不计），条款源 adr-archive-layer-reinstate-20260925；2026-09-27 自 session-review.py:108-109 硬编码收编入本件（PENDING T77 单源化，数值不变仅迁址）。调整在此单处。"
+  },
+  "capa_categories": {
+    "_meta": "CAPA/复盘 category 匹配键枚举单源（campaign-20260916 横切件）：写端 frontmatter 必填、读端精确匹配、other 不参与自动匹配、别名表作模糊匹配第二道。other 占比 >30%=枚举粒度失败回退重切；30-40% 为观察行。枚举按复发匹配用途切，每类锚 ≥1 实存事件，锚点 confidence 逐条标注（不因定稿加成）",
+    "categories": {
+      "model-tier-misjudge": {
+        "aliases": [
+          "路由误判",
+          "分档误判",
+          "path-misjudge"
+        ],
+        "anchor": "agent-eval-path-misjudge（metrics.latest.json 实存）",
+        "confidence": "H"
+      },
+      "io-budget-violation": {
+        "aliases": [
+          "回传违规",
+          "注入超限",
+          "预算绕过"
+        ],
+        "anchor": "session-search ≤60 行未登记副本（B.2 实锤）",
+        "confidence": "H"
+      },
+      "datachain-evidence-gap": {
+        "aliases": [
+          "不留痕",
+          "证据缺失",
+          "溯源断链"
+        ],
+        "anchor": "evolution-daily.log 蒸发且清理者不可考（D1）",
+        "confidence": "H"
+      },
+      "single-source-drift": {
+        "aliases": [
+          "双写漂移",
+          "副本失步",
+          "单源分叉"
+        ],
+        "anchor": "model-governance.md ≤16行 vs 单源 18（实弹漂移）",
+        "confidence": "H"
+      },
+      "scheduling-host-missing": {
+        "aliases": [
+          "双调度",
+          "宿主缺失",
+          "调度冲突",
+          "零读取点"
+        ],
+        "anchor": "cron+launchd 并跑且 plist 注释失实（D1 实锤）",
+        "confidence": "H"
+      },
+      "trigger-zero-instance": {
+        "aliases": [
+          "零实例",
+          "触发失效",
+          "纸面闭环"
+        ],
+        "anchor": "decision-improve 零 CAPA 实例+战役 0/2 有复盘（B.4 实测）",
+        "confidence": "H"
+      },
+      "skill-boundary-misuse": {
+        "aliases": [
+          "边界误用",
+          "复用误判",
+          "越域改动"
+        ],
+        "anchor": "token-effect-balance 执行臂越域（balance-point-verdict Alternatives 归档类）",
+        "confidence": "M"
+      },
+      "other": {
+        "aliases": [],
+        "anchor": "逃生口：note 须写一词根因短语",
+        "confidence": "-"
+      }
+    }
+  }
+}

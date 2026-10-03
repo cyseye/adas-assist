@@ -1,0 +1,9 @@
+{
+  "round": 0,
+  "round_status": "continue|converged|deadlock",
+  "protagonist_args": [],
+  "antagonist_challenges": [],
+  "unresolved_issues": [],
+  "converged_issues": [],
+  "critical_issues": []
+}

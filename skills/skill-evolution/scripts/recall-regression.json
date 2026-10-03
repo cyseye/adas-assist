@@ -1,0 +1,108 @@
+{
+  "_note": "knowledge-recall.py 召回回归用例（2026-09-19 误召修复配套）：负例不得召回任何条目，正例须保持命中 expectations 内任一条目；跑法见 _how_to_run。注意：positive 用例的 expect_any_title 依赖宿主 ~/.claude 沉淀 KNOWLEDGE/画像数据——本仓留壳（KNOWLEDGE 为空壳）安装下 positive 召空属预期，负例五条仍须全过；判召回逻辑回归须在已沉淀宿主环境跑",
+  "_how_to_run": "逐条取 prompt 构造 stdin JSON {'prompt':..., 'session_id':'回归-随机串'} 喂给 knowledge-recall.py：负例断言无输出，正例断言输出含 expectations 之一",
+  "negative": [
+    {
+      "prompt": "后端分页接口 Controller→Mapper 开发",
+      "expect": "no_recall",
+      "reason": "曾实证误召「组织阵型螺旋进化定版」——通文 bigram（实现/机制类）两条过 4 分门槛；修复=STOP_BIGRAMS 扩表"
+    },
+    {
+      "prompt": "Mapper 取数口径重构",
+      "expect": "no_recall",
+      "reason": "曾实证弱召「知识文档治理总纲」——分层/文档类通文 bigram 交叠"
+    },
+    {
+      "prompt": "后端分页接口 Controller→Mapper 开发，实现时复用现有分页机制",
+      "expect": "no_recall",
+      "reason": "误召机制最小复现句（实现+机制→组织阵型螺旋进化定版），修复后应零命中"
+    },
+    {
+      "prompt": "Mapper 取数口径重构，注意分层与文档同步更新",
+      "expect": "no_recall",
+      "reason": "误召机制最小复现句（分层+文档→知识文档治理总纲），修复后应零命中"
+    },
+    {
+      "prompt": "继续收尾",
+      "expect": "no_recall",
+      "reason": "R7 门槛探针 2026-09-29：len=4<20 短语跳过门（8→20），应静默零输出（正臂：若输出即门槛失效）"
+    }
+  ],
+  "positive": [
+    {
+      "prompt": "表格列宽自适应修复，渲染出来后列宽没生效",
+      "note": "R7 再基线 2026-09-29：原 prompt len=9，短语跳过门槛 8→20 后落入必空跳过类——扩写至 ≥20 保留同一召回目标（测召回逻辑非测跳过门）",
+      "expect_any_title": [
+        "Skill 螺旋演化闭环——Hook 驱动自适应进化体系",
+        "Probe assert visibility vs width"
+      ]
+    },
+    {
+      "prompt": "playwright 探针验证列可见性，没生效",
+      "note": "跨项目记忆源探针：期望条目在 kys-resource-dash 项目 memory（引擎按项目隔离不召回，Arm2 实验对象）。2026-09-26 标 cwd_hint：meta cwd 必红属 cwd 绑定语义非回归（_baseline known_fail_env 同源结论），仅在项目仓 cwd 计分；SKIP 机制=knowledge-recall._selftest 最小落地（_cr_note 复活条件兑现）",
+      "expect_any_title": [
+        "Probe assert visibility vs width"
+      ],
+      "cwd_hint": "kys-resource-dash"
+    },
+    {
+      "prompt": "git 分笔提交按 type 拆分，注意提交边界",
+      "expect_any_title": [
+        "lesson(提交边界,高价值)·L36",
+        "提交边界"
+      ],
+      "note": "量尺刷新 2026-09-25：原 5 期望条目已合并/退役，现行等价=lessons 提交边界"
+    },
+    {
+      "prompt": "文档压缩净行数负增长验收，验收勿虚报行数",
+      "expect_any_title": [
+        "lesson(冗余纠正",
+        "Compression task acceptance"
+      ],
+      "note": "量尺刷新 2026-09-25：现行等价=lessons 冗余纠正（M 终判）"
+    },
+    {
+      "prompt": "token 治理会话消耗纪律，本会话消耗又超了",
+      "expect_any_title": [
+        "Session token discipline",
+        "主模型切换联动定版——思考档调制+执行面隔离+模型治理部CEO直属扩权",
+        "brutal-verify 终裁+消耗治理定案（合并）"
+      ]
+    }
+  ],
+  "_retired_cases": {
+    "_note": "退役 case 留痕区（2026-09-26 根因归类批）：corpus 面已无任何可命中等价条目，保留必红无信号量；复活条件=对应知识重新入 corpus",
+    "figma 同构卡共用组件还原": {
+      "class": "A（回归集期望过时，非召回退化）",
+      "root_cause": "期望条目「figma 批量还原编排」已随 6899f5d 双仓拆分从 meta KNOWLEDGE.md 移出（原行指向某项目仓，该仓现已整目录不存在）（figma-to-code skill 连同其 decisions 一并退役），全 corpus（KNOWLEDGE/project KNOWLEDGE/USER-PREFERENCES/lessons/memory）grep 零命中",
+      "removed_from": "positive"
+    }
+  },
+  "conflict_resolution": [
+    {
+      "prompt": "废弃条目合并物理删，靠 git 历史检索旧版",
+      "expect": "no_recall_unless_fallback",
+      "reason": "CR 负例（仅命中 superseded 旧行，不命中新条目）：理想行为=不召回已失效结论；现状基线=knowledge-recall 失效过滤带存活回退（无存活命中时打 [已Supersede] 标注仍注入），故本探针在现逻辑下召回旧行——CR 缺口基线证据，回退语义裁决归下一批，本节不被 _selftest 消费（避免套件常红），裁决落地后迁入 negative 数组",
+      "_baseline_2026-09-25": "三轮实测：①混合 prompt（教训条目冲突沉淀裁决）只回 A' 旧行被滤=过滤有效；②旧条目关键词 prompt 误召其他存活条目（泛 bigram 面）但旧行仍被滤；③纯旧行独占 prompt（旧运作口径仅留终版）触发存活回退——旧行打 [已Supersede·见新结论] 标注仍注入=CR 缺口本体现"
+    },
+    {
+      "prompt": "教训条目冲突时如何沉淀与裁决",
+      "expect_any_title": [
+        "教训沉淀前三步冲突裁决——相似旧条目成对裁决+supersede 标记不删"
+      ],
+      "_cr": "冲突解决探针（MemoryAgentBench 外参，E2 2026-09-25）：prompt 同时命中新旧两条（教训/条目/冲突），期望只召回带 valid_from 的新结论 A'——superseded 旧行被 knowledge-recall 失效过滤（_live 非空即剔除），本探针同时验证过滤非空转"
+    }
+  ],
+  "_cr_note": "CR 探针暂移非消费节（2026-09-25）：跨 cwd 语义未定——KNOWLEDGE.md:project 按项目仓解析，规则行仅在元层 cwd 可见，meta-regression case15 于项目仓跑时必红。人工验证已过（本会话 selftest 7/11 含 CR PASS，旧行 superseded 过滤实测生效）。复活条件=recall 规则行源 cwd 无关化或探针支持 cwd 条件。基线见 _baseline_2026-09-25。",
+  "_baseline_2026-09-25": {
+    "note": "压缩战役R1+外参吸收批三轮回测基线（2026-09-25 finish-check 补登记，此前声称登记未落盘——B4-1 类缺陷实证修正）",
+    "round1": "压缩战役验证轮：全探针行为面 PASS（KNOWLEDGE 规则行恢复后）",
+    "round2": "外参吸收轮：CR 探针迁入 conflict_resolution 节（非消费区，跨 cwd 语义未定，复活条件见 _cr_note）",
+    "round3": "finish-check 收口轮：双 cwd 机械实跑各一次——元层 cwd 6/10（4 个项目仓阳性漏召=既知 cwd 绑定语义，knowledge-recall 按 cwd 解析数据根，非回归）；项目仓 kys-resource-dash cwd 10/10 PASS exit=0。【勘误】此前记载「knowledge-recall.py 无 --selftest 接口」失实——接口存在且需路径参数 (--selftest <recall-regression.json>)，meta-regression case15 以项目仓 cwd 绑定消费，自动化壳早已建成",
+    "known_fail_env": [
+      "meta-regression case01/07 沙箱 PermissionError（非行为面）",
+      "case02 锚对账随并行会话在途归档批波动",
+      "元层 cwd 直跑 --selftest 6/10 属 cwd 绑定预期，判回归须以 case15（项目仓 cwd）为准"
+    ]
+  }
+}

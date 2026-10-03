@@ -1,0 +1,30 @@
+# agentos-lite 分发仓 .gitignore（白名单式思路：运行时数据不入库）
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# 运行时数据（本地生成，不入库）
+.build/
+.state/
+*.log
+*.tmp
+
+# 决策/台账运行时数据：目录壳入库（README 格式约定），内容不入
+decisions/adr/**
+!decisions/adr/.gitkeep
+decisions/postmortems/**
+!decisions/postmortems/README.md
+!decisions/KNOWLEDGE.md
+
+# 用户画像运行时数据
+memory/**
+!memory/USER-PREFERENCES.md
+
+# 本机配置（永不入库）
+settings.json
+settings.local.json
+skills/*/registry/
+__pycache__/
