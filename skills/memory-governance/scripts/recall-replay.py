@@ -7,39 +7,35 @@ titles + prompt_len，不存 user_input 原文；invocations.jsonl 无 user_inpu
 prompt 实际命中的条目标题，作为历史核心命中词证据集回放，与"原始 prompt 回放"
 对锚点覆盖度的检验力等价（R0/R1 同口径，公平对比）。
 
-匹配逻辑 import knowledge-recall 的 _tokens/_load_memory_index（文件名带连字符
-须 importlib 加载）——防重写口径漂移。口径为 memory-only（不对 KNOWLEDGE 源跑）：
+匹配逻辑复用本目录 recall_core.py 的 _tokens/_load_memory_index——防重写口径漂移。口径为 memory-only（不对 KNOWLEDGE 源跑）：
 治理验证只关心 memory 层召回能力，隔离 KNOWLEDGE 条目挤占 top3 的干扰。
 
 用法：
-  python3 recall-replay.py r0   # 治理前基线，落 .build/memory-replay-r0.json
-  python3 recall-replay.py r1   # 治理后复测，与 r0 对比输出 delta
+  python3 recall-replay.py r0 --memory-root memory --data-root .   # 治理前基线，落 .build/memory-replay-r0.json
+  python3 recall-replay.py r1 --memory-root memory --data-root .   # 治理后复测，与 r0 对比输出 delta
 """
 from __future__ import annotations
 
 import importlib.util
+import argparse
+import re
 import json
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-KR_PATH = (Path.home() / ".claude" / "skills" / "skill-evolution"
-           / "scripts" / "knowledge-recall.py")
-# knowledge-recall 顶部 from shared_state import ...，须先让其目录可解析
-sys.path.insert(0, str(KR_PATH.parent))
-
-
-def _load_kr():
-    """importlib 加载带连字符文件名的 knowledge-recall（模块级无写盘副作用，安全）。"""
-    spec = importlib.util.spec_from_file_location("knowledge_recall", KR_PATH)
+def _load_kr(memory_root: Path | None = None):
+    """Load the local pure parser; memory_root is retained for existing callers."""
+    source = Path(__file__).resolve().with_name("recall_core.py")
+    spec = importlib.util.spec_from_file_location("recall_core", source)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
 
-def _probes(repo: Path) -> list[str]:
+def _probes(repo: Path, log_path: Path | None = None) -> list[str]:
     """探针集：近 30 天非 test- 会话 knowledge-recall match 行 titles 拼接。"""
-    log = repo / ".claude" / ".build" / "reflex-hooks.jsonl"
+    log = log_path or (repo / ".adas-assist" / ".build" / "reflex-hooks.jsonl")
     if not log.exists():
         return []
     cutoff = datetime.now() - timedelta(days=30)
@@ -62,6 +58,30 @@ def _probes(repo: Path) -> list[str]:
         if titles:
             probes.append(" ".join(str(t) for t in titles))
     return probes
+
+
+def _validate_index_paths(index: Path, root: Path) -> None:
+    """Reject index links whose entry or symlink resolves outside explicit memory root."""
+    if index.is_symlink():
+        raise ValueError("MEMORY.md symlink is not followed in explicit-root mode")
+    if not index.is_file():
+        return
+    boundary = root.resolve()
+    for line in index.read_text(encoding="utf-8").splitlines():
+        match = re.match(r"- \[([^]]+)\]\(([^)]+)\)", line)
+        if match:
+            target = (index.parent / match.group(2).strip()).resolve()
+            if target != boundary and boundary not in target.parents:
+                raise ValueError(f"memory index entry escapes --memory-root: {match.group(2)}")
+
+
+def _ensure_within_root(path: Path, root: Path, label: str) -> Path:
+    """Resolve an explicit-mode read/write target and reject symlink escapes."""
+    boundary = root.resolve()
+    resolved = path.resolve()
+    if resolved != boundary and boundary not in resolved.parents:
+        raise ValueError(f"{label} escapes --data-root")
+    return resolved
 
 
 def replay(kr, probes: list[str], entries: list[dict], knowledge: list[dict] | None = None) -> dict:
@@ -108,15 +128,31 @@ def replay(kr, probes: list[str], entries: list[dict], knowledge: list[dict] | N
 
 
 def main() -> int:
-    tag = sys.argv[1] if len(sys.argv) > 1 else "r0"
-    kr = _load_kr()
-    repo = kr.REPO
-    entries = kr._load_memory_index(kr._user_memory())
-    probes = _probes(repo)
-    result = replay(kr, probes, entries, knowledge=kr._load_knowledge())
+    parser = argparse.ArgumentParser()
+    parser.add_argument("tag", nargs="?", default="r0")
+    parser.add_argument("--memory-root", type=Path, required=True, help="fixture/project memory directory or MEMORY.md; avoids host lookup")
+    parser.add_argument("--data-root", type=Path, required=True, help="explicit probe/output root (fixture mode only)")
+    args = parser.parse_args()
+    tag = args.tag
+    if args.memory_root is not None and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", tag):
+        parser.error("fixture tag must be a single identifier using letters, digits, '_' or '-'")
+    kr = _load_kr(args.memory_root)
+    if args.memory_root is not None:
+        if args.data_root is None:
+            parser.error("--data-root is required with --memory-root (use a disposable fixture directory)")
+        repo = args.data_root.expanduser().resolve()
+        probe_path = _ensure_within_root(
+            repo / ".adas-assist" / ".build" / "reflex-hooks.jsonl", repo, "probe log")
+        supplied_root = args.memory_root.expanduser()
+        root = supplied_root.resolve()
+        memory_index = root / "MEMORY.md" if root.is_dir() else supplied_root
+        _validate_index_paths(memory_index, memory_index.parent)
+        entries = kr._load_memory_index(memory_index)
+    probes = _probes(repo, probe_path)
+    result = replay(kr, probes, entries, knowledge=[])
     # 证据集：历史 titles ∩ 当前 memory 条目 = 曾被真实 prompt 召回的条目（治理保护名单）
     titles_hist: set[str] = set()
-    log = repo / ".claude" / ".build" / "reflex-hooks.jsonl"
+    log = probe_path or (repo / ".adas-assist" / ".build" / "reflex-hooks.jsonl")
     if log.exists():
         cutoff = datetime.now() - timedelta(days=30)
         for ln in log.read_text(encoding="utf-8").splitlines():
@@ -137,7 +173,11 @@ def main() -> int:
     result["evidence_titles"] = evidence
     result["entries_total"] = len(entries)
 
-    out = repo / ".claude" / ".build" / f"memory-replay-{tag}.json"
+    out = repo / ".adas-assist" / ".build" / f"memory-replay-{tag}.json"
+    base_path = out.parent / "memory-replay-r0.json"
+    if probe_path is not None:
+        out = _ensure_within_root(out, repo, "report output")
+        base_path = _ensure_within_root(base_path, repo, "baseline report")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"[{tag}] 探针 {result['probes']} 条 / memory 命中 {result['probes_hit']}"
@@ -145,7 +185,6 @@ def main() -> int:
           f"证据集（历史命中过的 memory 条目）{len(evidence)} 个 → {out}")
 
     if tag != "r0":
-        base_path = out.parent / "memory-replay-r0.json"
         if base_path.exists():
             base = json.loads(base_path.read_text(encoding="utf-8"))
             print(f"[delta vs r0] 命中率 {base['hit_rate']} → {result['hit_rate']}；"

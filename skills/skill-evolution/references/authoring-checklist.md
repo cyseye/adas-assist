@@ -1,10 +1,10 @@
 # Skill 写作检查单（官方 authoring best practices 收口）
 
-> 来源：Anthropic 官方 Skill authoring best practices（platform.claude.com，2026-06 版）提炼收口，一处定义。新建 skill 写作时对照；skill-evolution Step 1b 对无专属 checklist 的目标 skill 以此为通用审查依据。
+> 本仓写作检查依据。新建或维护技能时按需使用；不代替宿主真实发现和行为验收。
 
 ## 1. frontmatter 硬约束
 
-- `name`：≤64 字符，仅小写字母/数字/连字符；禁 XML 标签与保留词（anthropic/claude）
+- `name`：≤64 字符，仅小写字母/数字/连字符；不含 XML 标签
 - `description`：≤1024 字符非空；**第三人称**（注入 system prompt，视角不一致致发现失败）；**what + when 双要素** + 具体关键词——从 100+ skill 中被选中的唯一依据，禁 vague（"帮助处理文档"）
 
 ## 2. 精简原则（token 是公共资源）
@@ -56,8 +56,8 @@
 | 官方要求 | 本体系对照 |
 |---------|-----------|
 | 评估先行（先建 ≥3 场景评估再写文档，测真实缺口非想象需求） | skill-evolution baseline 自然回填（骨架优先哲学：先最小骨架后量化——差异已记 ADR，维持本体系） |
-| A/B 双实例迭代（Claude A 写、Claude B 用、观察回改） | 主控写 skill + 真实使用观察（invocations 留痕 + 纠偏三档）等价承载 |
-| 观察模型实际怎么用（意外路径/漏跟链接/过度依赖/忽略文件） | session-review 冷/热/死 skill 信号 + 用户纠正沉淀 |
+| 独立上下文迭代（编写、使用、观察回改） | 主控编写，独立使用并记录实际产物与问题 |
+| 观察模型实际怎么用（意外路径/漏跟链接/过度依赖/忽略文件） | 本次实际使用记录与用户反馈 |
 
 ## 10. 交付前检查（官方 checklist 收口）
 

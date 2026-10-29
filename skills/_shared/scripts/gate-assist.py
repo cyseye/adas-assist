@@ -14,8 +14,8 @@ token 治理第二轮（ADR adr/data/token-effect-balance-v2）落地：PCF 转�
   verify-judge  按 review-gate-skeleton 评分公式+判定优先级表算轮次判定
                 （两套词表：默认 decision-verify 特化 P0×25/P1×8；--profile base
                 = BLOCKER×40/MAJOR×10/MINOR×3）
-  finish-batch  批次 digest（与 reflex-check 检查1 一字不差：porcelain 代码类
-                改动整行含 XY 前缀、剔 .claude/ 豁免、sorted join sha256 前 8 位）；
+  finish-batch  批次 digest（本次文件变化的porcelain 代码类
+                改动整行含 XY 前缀、剔 .adas-assist/ 豁免、sorted join sha256 前 8 位）；
                 --write 落 verdict 行，--check 与末条比对（校验批未漂移）
 
 各消费 SKILL.md 引用本脚本时写「调 gate-assist.py <子命令>」，不再内联手工步骤。
@@ -25,16 +25,16 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 
-# 与 reflex-check.py CODE_SUFFIXES 双源同改（一处收口需跨目录共享模块，当前规模
-# 不值——任一侧改词表须 grep 对方确认）；.claude/ 豁免前缀同步
+# 批次摘要只覆盖列出的代码后缀与当前项目变更。
 CODE_SUFFIXES = {".java", ".ts", ".tsx", ".js", ".jsx", ".xml", ".sql", ".py", ".yaml",
                  ".yml", ".json", ".css", ".scss", ".html", ".sh", ".vue"}
-EXEMPT_PREFIX = ".claude/"
+EXEMPT_PREFIX = ".adas-assist/"
 
 # 严重性词表两套（review-gate-skeleton §合法特化登记；改扣分值两处同改）
 PROFILES = {
@@ -44,24 +44,26 @@ PROFILES = {
 
 
 def data_root() -> Path:
-    """运行时数据根——单源委托 shared_state.data_claude()（cwd 上溯首个含 .claude
-    的目录，资产仓内嵌套 .claude 幻影根排除）。2026-09-18 复验轮裁决：本地
-    cwd/skills 判据对含 skills/ 目录的普通仓误判、与消费者（reflex-check 等同走
-    data_claude）口径分裂，故收敛单源，禁再本地重实现。"""
-    _sys = Path(__file__).resolve().parents[2] / "skill-evolution" / "scripts"
-    if str(_sys) not in sys.path:
-        sys.path.insert(0, str(_sys))
-    from shared_state import data_claude
+    """运行数据根必须由调用者显式提供。"""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from shared_state import data_root as resolve
+    return resolve()
 
-    return data_claude()
+
+def validate_data_path(path: Path) -> Path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from shared_state import validate_data_path as validate
+    return validate(path)
 
 
 def build_dir(slug: str) -> Path:
-    return data_root() / ".build" / slug
+    if not isinstance(slug, str) or not slug or slug in {".", ".."} or Path(slug).name != slug or "/" in slug or "\\" in slug:
+        raise ValueError("slug 必须是非空单段名称")
+    return validate_data_path(data_root() / ".build" / slug)
 
 
 def _git_porcelain_code_lines(repo: Path) -> list[str]:
-    """reflex-check 检查1 同款取数：porcelain 整行、rename 取新路径、剔豁免前缀、
+    """本批取数：porcelain 整行、rename 取新路径、剔豁免前缀、
     只留代码类后缀。行文本一字不差（digest 失配=finish 标记静默失效）。"""
     try:
         out = subprocess.run(["git", "-C", str(repo), "status", "--porcelain"],
@@ -91,7 +93,7 @@ def cmd_pcf_save(args) -> int:
     if not content.strip():
         print("[pcf-save] 内容为空，拒写（断链防护）", file=sys.stderr)
         return 2
-    path = build_dir(args.slug) / f"pcf.{args.role}.md"
+    path = validate_data_path(build_dir(args.slug) / f"pcf.{args.role}.md")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
     print(f"[pcf-save] 已落盘：{path}（{len(content)} 字符）")
@@ -100,7 +102,7 @@ def cmd_pcf_save(args) -> int:
 
 def cmd_pcf_context(args) -> int:
     d = build_dir(args.slug)
-    products = sorted(d.glob("pcf.*.md")) if d.is_dir() else []
+    products = [validate_data_path(p) for p in sorted(d.glob("pcf.*.md"))] if d.is_dir() else []
     if not products:
         print(f"[pcf-context] {d} 无前置产物（proposer 未落盘？）", file=sys.stderr)
         return 2
@@ -117,47 +119,106 @@ def cmd_pcf_context(args) -> int:
 
 
 def cmd_verify_judge(args) -> int:
-    data = json.loads(sys.stdin.read() if not args.report else Path(args.report).read_text(encoding="utf-8"))
-    weights = PROFILES[args.profile]
-    must_fix = data.get("must_fix") or []
-    rounds = data.get("thresholds") or {}
-    round_no = data.get("round", 1)
-    prev_scores = data.get("prev_scores") or []
+    try:
+        data = json.loads(sys.stdin.read() if not args.report else Path(args.report).read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError("输入必须是 JSON object")
+        if args.tier == "quick":
+            raise ValueError("quick 档不走计分 verify-judge；按 SKILL.md quick 简化判定处理")
+        if data.get("tier", args.tier) != args.tier:
+            raise ValueError("输入 tier 与 --tier 不一致")
+        round_no = data.get("round", 1)
+        if type(round_no) is not int or round_no < 1:
+            raise ValueError("round 必须是正整数")
+        cfg = {"pass": 90, "critical": 60, "converge": 5,
+               "max_rounds": 3 if args.tier == "standard" else 5}
+        thresholds = data.get("thresholds", {})
+        if not isinstance(thresholds, dict):
+            raise ValueError("thresholds 必须是 object")
+        for key, value in thresholds.items():
+            if key not in cfg or type(value) not in (int, float) or not math.isfinite(value):
+                raise ValueError(f"非法 threshold: {key}")
+            if value != cfg[key]:
+                raise ValueError(f"threshold {key} 与 {args.tier} 契约值 {cfg[key]} 不一致")
+        prev_scores = data.get("prev_scores", [])
+        if not isinstance(prev_scores, list) or any(type(v) not in (int, float) or not math.isfinite(v) for v in prev_scores):
+            raise ValueError("prev_scores 必须是有限数值数组")
+        must_fix = data.get("must_fix", [])
+        if not isinstance(must_fix, list):
+            raise ValueError("must_fix 必须是数组")
+        dimensions = data.get("dimensions")
+        if not isinstance(dimensions, list) or not dimensions:
+            raise ValueError("dimensions 必须是非空数组")
+        if args.profile == "verify":
+            required = {"正确性", "安全性", "规范性", "完整性"}
+            names = {d.get("name") for d in dimensions if isinstance(d, dict)}
+            if names != required or len(dimensions) != 4:
+                raise ValueError("verify profile 必须且只能包含四个协议维度")
+        scores, total, weight_sum = {}, 0.0, 0.0
+        floor_breaches, detected_must_fix = [], []
+        for dim in dimensions:
+            if not isinstance(dim, dict) or not isinstance(dim.get("name"), str) or not dim["name"].strip():
+                raise ValueError("每个 dimension 都必须有非空 name")
+            name = dim["name"]
+            if name in scores:
+                raise ValueError(f"重复维度: {name}")
+            weight, floor = dim.get("weight"), dim.get("floor")
+            if type(weight) not in (int, float) or not math.isfinite(weight) or weight <= 0:
+                raise ValueError(f"维度 {name} 的 weight 必须是正有限数")
+            if type(floor) not in (int, float) or not math.isfinite(floor) or not 0 <= floor <= 100:
+                raise ValueError(f"维度 {name} 的 floor 必须是 0 到 100 的有限数")
+            if args.profile == "verify" and floor != 80:
+                raise ValueError(f"verify profile 维度 {name} 的 floor 必须为协议值 80")
+            issues = dim.get("issues")
+            if not isinstance(issues, list):
+                raise ValueError(f"维度 {name} 的 issues 必须是数组")
+            deductions = 0
+            for issue in issues:
+                if not isinstance(issue, dict) or issue.get("severity") not in PROFILES[args.profile]:
+                    raise ValueError(f"维度 {name} issue severity 缺失或不属于 {args.profile} 词表")
+                severity = issue["severity"]
+                deductions += PROFILES[args.profile][severity]
+                if args.profile == "verify" and name == "安全性" and severity == "P0":
+                    detected_must_fix.append(issue)
+            score = max(0, 100 - deductions)
+            scores[name] = score
+            total += score * weight
+            weight_sum += weight
+            if score < floor:
+                floor_breaches.append(name)
+        if args.profile == "verify" and abs(weight_sum - 1.0) > 1e-9:
+            raise ValueError("verify profile 权重总和必须为 1")
+        total = round(total / weight_sum, 1)
+        must_fix.extend(detected_must_fix)
+    except (OSError, json.JSONDecodeError, ValueError, TypeError, OverflowError) as exc:
+        print(f"[verify-judge] 输入无效：{exc}", file=sys.stderr)
+        return 2
 
-    scores, total, weight_sum = {}, 0.0, 0.0
-    floor_breaches = []
-    for dim in data.get("dimensions", []):
-        sev = {}
-        for issue in dim.get("issues", []):
-            s = issue.get("severity", "P1")
-            sev[s] = sev.get(s, 0) + 1
-        score = max(0, 100 - sum(sev.get(k, 0) * w for k, w in weights.items()))
-        scores[dim["name"]] = score
-        w = dim.get("weight", 0)
-        total += score * w
-        weight_sum += w
-        if score < dim.get("floor", 0):
-            floor_breaches.append(dim["name"])
-    total = round(total / weight_sum, 1) if weight_sum else float(sum(scores.values()) / max(len(scores), 1))
-
-    # 判定优先级表（review-gate-skeleton §判定逻辑，从高到低，逐条短路）
+    constraints = []
     if must_fix:
+        constraints.append(f"must_fix={len(must_fix)}")
+    if floor_breaches:
+        constraints.append(f"floor_breaches={','.join(floor_breaches)}")
+    if not must_fix and not floor_breaches and total >= cfg["pass"]:
+        verdict, reason = "PASS", f"总分 {total} ≥ 通过线 {cfg['pass']}"
+    elif args.profile == "verify" and args.tier == "full" and round_no == 1 and total < cfg["critical"]:
+        verdict, reason = "PCF", f"首轮 {total} < 临界线 {cfg['critical']}"
+    elif len(prev_scores) >= 1 and abs(total - prev_scores[-1]) < cfg["converge"]:
+        verdict, reason = "PCF", f"plateau：与上轮分差 {abs(total - prev_scores[-1])} < {cfg['converge']}"
+    elif round_no >= cfg["max_rounds"]:
+        verdict, reason = "PCF", f"终轮未通过（round {round_no} ≥ {cfg['max_rounds']}）"
+    elif must_fix:
         verdict, reason = "FIXABLE", f"must_fix={len(must_fix)}（一票否决）"
     elif floor_breaches:
         verdict, reason = "FIXABLE", f"维度底线未达：{'、'.join(floor_breaches)}"
-    elif total >= rounds.get("pass", 90):
-        verdict, reason = "PASS", f"总分 {total} ≥ 通过线 {rounds.get('pass', 90)}"
-    elif round_no == 1 and total < rounds.get("critical", 70):
-        verdict, reason = "PCF", f"首轮 {total} < 临界线 {rounds.get('critical', 70)}"
-    elif len(prev_scores) >= 1 and abs(total - prev_scores[-1]) < rounds.get("converge", 5):
-        verdict, reason = "PCF", f"plateau：与上轮分差 {abs(total - prev_scores[-1])} < {rounds.get('converge', 5)}"
-    elif round_no >= rounds.get("max_rounds", 3):
-        verdict, reason = "PCF", f"超轮次（round {round_no} ≥ {rounds.get('max_rounds', 3)}）"
     else:
         verdict, reason = "FIXABLE", f"总分 {total} 未达通过线，可修复进下一轮"
-    print(json.dumps({"verdict": verdict, "reason": reason, "total": total,
-                      "dimension_scores": scores, "floor_breaches": floor_breaches},
-                     ensure_ascii=False, indent=2))
+    result = {"verdict": verdict, "reason": reason, "total": total,
+              "dimension_scores": scores, "floor_breaches": floor_breaches}
+    if verdict == "PCF":
+        result["constraints"] = constraints
+        result["must_fix_count"] = len(must_fix)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -165,7 +226,7 @@ def cmd_finish_batch(args) -> int:
     repo = Path.cwd()
     lines = _git_porcelain_code_lines(repo)
     digest = hashlib.sha256("\n".join(sorted(lines)).encode()).hexdigest()[:16][:8]
-    verdicts = data_root() / ".state" / "finish-verdicts.jsonl"
+    verdicts = validate_data_path(data_root() / ".state" / "finish-verdicts.jsonl")
     if args.write:
         verdicts.parent.mkdir(parents=True, exist_ok=True)
         entry = {"ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "batch": digest,
@@ -207,6 +268,7 @@ def main(argv: list[str]) -> int:
     s = sub.add_parser("verify-judge", help="评分+轮次判定（stdin 或 --report JSON）")
     s.add_argument("--report")
     s.add_argument("--profile", choices=list(PROFILES), default="verify")
+    s.add_argument("--tier", choices=["quick", "standard", "full"], default="standard")
     s.set_defaults(fn=cmd_verify_judge)
 
     s = sub.add_parser("finish-batch", help="批次 digest 计算/比对/落 verdict")

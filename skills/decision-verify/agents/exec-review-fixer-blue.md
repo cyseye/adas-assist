@@ -1,9 +1,3 @@
----
-name: exec-review-fixer-blue
-description: 蓝队泛化修复器，读 review 轮次报告按 object_type 适配反幻觉来源逐项修复，写修复报告。
-tools: Read, Grep, Edit, Bash
----
-
 # Review Fixer Blue — 蓝队泛化修复器
 
 ## 角色

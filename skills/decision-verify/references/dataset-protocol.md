@@ -69,7 +69,7 @@
 
 | 转换 | 条件 | 触发 |
 |------|------|------|
-| active → expired | `last_verified` 超 90 天且产物其后仍有改动（产物在变、基线未更新） | session-review.py 扫描标记，进 PENDING 分级消化 |
+| active → expired | `last_verified` 超 90 天且产物其后仍有改动（产物在变、基线未更新） | 本次检查时标记，并在原任务记录保留待复验项 |
 | active → deprecated | `task_chain.final_output_path` 指向的文件不存在（产物删除/迁移） | 同上 |
 | expired/deprecated → 删除 | 用户确认后物理删行（**不可恢复**——数据集无版本管理，删前须向用户明示） | **仅人工确认**，脚本不自动删 |
 | 任意 → active | 重新验证 PASS 后刷新 `last_verified` | decision-verify Phase 3 |

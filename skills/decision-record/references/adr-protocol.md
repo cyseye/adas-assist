@@ -44,7 +44,7 @@ Proposed ──采纳──▶ Accepted
 ## 命名规则
 
 - 格式 `{语义slug}.md`——目录即业务域，文件名语义 kebab **全局唯一、禁数字编号**（规范详见 `standards/common/doc-naming.md`）
-- 新建时 grep 查重 slug；撞名换更精确语义词重试（≤3 次）。不引入文件锁——ADR 创建低频、主控串行为主，重试足以覆盖跨会话偶发并发（适用域限定：入库知识文件，git 仲裁兜底见下节；gitignored 运行时状态文件由 [shared-state-concurrency](../../../decisions/adr/meta/shared-state-concurrency.md) 的 flock+原子写机制管理）
+- 新建时 grep 查重 slug；撞名换更精确语义词重试（≤3 次）。不引入文件锁——ADR 创建低频、主控串行为主，重试足以覆盖跨会话偶发并发（适用域限定：入库知识文件，git 仲裁兜底见下节；gitignored 运行时状态文件的 flock+原子写机制见 [shared_state.py](../../_shared/scripts/shared_state.py)，历史 ADR shared-state-concurrency 本仓未包含）
 
 ## 并发修改
 
@@ -54,13 +54,13 @@ text 文件读-改-写在无锁下无法真正原子。各类修改并发的处�
 
 | 场景 | 事前 | 仲裁 | 事后兜底 |
 |------|------|------|---------|
-| KNOWLEDGE 索引更新 | 写前 re-read 检测目标条目是否已存在，避免重复追加/丢条 | git 提交仲裁（后提交者 merge conflict） | session-review `adr-consistency`（孤儿/缺条目双向对账） |
+| KNOWLEDGE 索引更新 | 写前 re-read 检测目标条目是否已存在，避免重复追加/丢条 | git 提交仲裁（后提交者 merge conflict） | 本次维护时做孤儿/缺条目双向对账 |
 | 同一 ADR 内容改 | 无（低频） | git 仲裁 | verify `ADR-M01~M08` |
 | Supersede 并发 | `superseded_by` 单值——一个 ADR 同时只能被一个新 ADR 取代 | 并发两个 Supersede 同一旧 ADR → 不自动合并，git 冲突/人工裁决 | verify `ADR-M12`（双向一致） |
 
 原则：
 
-- **不预防到底，但能发现+修复**：并发导致的不一致由 verify（adr 对象）与 session-review 一致性扫描事后揪出，主控按 `adr-checklist.md` 修复
+- **不预防到底，但能发现+修复**：并发导致的不一致由 verify（adr 对象）与本次索引一致性检查事后揪出，主控按 `adr-checklist.md` 修复
 - **git 是最终真相**：入库知识文件的跨会话并发终极冲突 = git merge conflict，adas-assist 不重造版本控制；PENDING 等运行时文件全量快照语义（最新磁盘真值胜出）
 - **KNOWLEDGE 更新 re-read**：record 更新 KNOWLEDGE 时写前重读，目标条目已存在则跳过、检测到新条目则 re-base 自己的追加
 

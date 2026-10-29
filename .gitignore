@@ -1,4 +1,4 @@
-# adas-assist 分发仓 .gitignore（白名单式思路：运行时数据不入库）
+# adas-assist .gitignore（运行时数据不入库）
 
 # Python
 __pycache__/
@@ -22,9 +22,33 @@ decisions/postmortems/**
 # 用户画像运行时数据
 memory/**
 !memory/USER-PREFERENCES.md
+!memory/MEMORY.md
 
 # 本机配置（永不入库）
 settings.json
 settings.local.json
 skills/*/registry/
-__pycache__/
+
+# v1.0 单任务本地运行状态
+.adas-assist/
+
+# Codex 发现入口只跟踪指向根技能的软链接，不保存安装副本
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/_shared
+!.agents/skills/scripts
+!.agents/skills/decision-consensus
+!.agents/skills/decision-explore
+!.agents/skills/decision-improve
+!.agents/skills/decision-lifecycle
+!.agents/skills/decision-record
+!.agents/skills/decision-verify
+!.agents/skills/devils-panel
+!.agents/skills/effect-governance
+!.agents/skills/finish-check
+!.agents/skills/info-collection
+!.agents/skills/io-governance
+!.agents/skills/memory-governance
+!.agents/skills/os
+!.agents/skills/skill-evolution

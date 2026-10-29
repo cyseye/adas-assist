@@ -12,7 +12,7 @@
 
 ## ② 用户全拒绝 / 无响应
 
-AskUserQuestion 连续拒绝回答所有提问（explore 提问、improve 事实收集、record 确认等）：
+用户交互 连续拒绝回答所有提问（explore 提问、improve 事实收集、record 确认等）：
 - 未答项全部转显式假设（按各 skill 假设协议记录），不编造
 - 关键决策点拒绝 → 标 `[BLOCKED]` + escalate_to_user，不强行下结论
 - 拒绝率 >50% → 标 `[LOW_CONFIDENCE]`，强烈建议转 consensus 或人工确认后再推进
@@ -37,6 +37,6 @@ subagent（reviewer/fixer 类，主控自演时跳过本条）spawn 失败：
 
 ## 通用原则
 
-- 所有降级必须在产物（metrics/registry/最终 artifact）留痕，便于主控/人当下读产物时追溯。降级是会话内当下处理（hard-fail 阻断 / 主控代行 / escalate），不依赖 session-review 事后扫描；session-review 只收体系级跨会话信号（dead-skill / stale-eval / verify-must-fix），二者分层不混淆
+- 所有降级必须在产物（metrics/registry/最终 artifact）留痕，便于主控/人当下读产物时追溯。降级是会话内当下处理（hard-fail 阻断 / 主控代行 / escalate），不依赖事后自动扫描
 - 降级 ≠ 失败：是「带约束地继续」，约束必须显式标注
 - 静默吞错是反模式：异常要么处理留痕，要么 escalate，绝不消失

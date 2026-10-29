@@ -11,7 +11,7 @@ description: "决策沉淀/ADR/架构决策记录：记为可追溯 ADR，主 ag
 
 ## 运行约定
 
-- `{adr_dir}` = `~/.claude/decisions/adr/{域}/`（双域：`meta/` 元层工程——adas-assist 机制/文档治理/方法论，无法归类归此；`data/` 数据业务共性决策，首份落此写 frontmatter `domain: data`（dual-domain-taxonomy）；**落点路由**：harness skill 业务决策 → 对应 skill `decisions/`（本地保留、不进本索引、不扫治理信号），业务项目技术选型 → `project-docs/`）
+- `{adr_dir}` = `decisions/adr/{域}/`（双域：`meta/` 元层工程——adas-assist 机制/文档治理/方法论，无法归类归此；`data/` 数据业务共性决策，首份落此写 frontmatter `domain: data`（dual-domain-taxonomy）；**落点路由**：harness skill 业务决策 → 对应 skill `decisions/`（本地保留、不进本索引、不扫治理信号），业务项目技术选型 → `project-docs/`）
 - `{task_dir}` = 当前任务工作目录（默认 cwd），中间产物走 `{task_dir}/.build/`
 - 不 spawn subagent，主 agent 交互式执行
 - 命名：`{语义slug}.md`（目录即业务域），slug 全局唯一、禁数字编号（规范见 `standards/common/doc-naming.md`）
@@ -34,14 +34,14 @@ description: "决策沉淀/ADR/架构决策记录：记为可追溯 ADR，主 ag
 
 | Step | 动作 | 工具 / 详情 |
 |------|------|------------|
-| 0 | 识别决策点 + 召回 | 用户指定 / 主控从上下文提取 / 主控裁决转交（consensus/lifecycle/devils-panel）（`adversary-report.json` verdict=reject 且用户强行推进 → 记「风险已知接受」ADR，compromise → 记有条件通过，见 `devils-panel/references/integration-mapping.md 接入点4`）；判定「值得沉淀」（`adr-protocol.md §何为值得沉淀的决策`）；**上游有 clarified-requirements.md 时：先读 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则**读 `~/.claude/decisions/KNOWLEDGE.md` 装配 Context**（按 `standards/common/knowledge-protocol.md` 词表匹配决策主题，补 Step 1 背景）；**去重**：召回发现高度相似已有 ADR（同主题+同方向）→ 不自动建新，提示三选：① Supersede（决策变更，旧 ADR 标 Superseded）② 跳过（完全重复，仅记 linked_adr）③ 合并（新视角补进旧 ADR Consequences） |
-| 1 | 背景澄清 | 按 `references/adr-protocol.md §五要素` 的 Context 要素提问（问题 / 约束 / 驱动因素），AskUserQuestion ≤4 问/批；复用 socratic 思想 |
+| 0 | 识别决策点 + 召回 | 用户指定 / 主控从上下文提取 / 主控裁决转交（consensus/lifecycle/devils-panel）（`adversary-report.json` verdict=reject 且用户强行推进 → 记「风险已知接受」ADR，compromise → 记有条件通过，见 `devils-panel/references/integration-mapping.md 接入点4`）；判定「值得沉淀」（`adr-protocol.md §何为值得沉淀的决策`）；**上游有 clarified-requirements.md 时：先读 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则**读 `decisions/KNOWLEDGE.md` 装配 Context**（按 `standards/common/knowledge-protocol.md` 词表匹配决策主题，补 Step 1 背景）；**去重**：召回发现高度相似已有 ADR（同主题+同方向）→ 不自动建新，提示三选：① Supersede（决策变更，旧 ADR 标 Superseded）② 跳过（完全重复，仅记 linked_adr）③ 合并（新视角补进旧 ADR Consequences） |
+| 1 | 背景澄清 | 按 `references/adr-protocol.md §五要素` 的 Context 要素提问（问题 / 约束 / 驱动因素），用户交互 ≤4 问/批；复用 socratic 思想 |
 | 2 | 备选梳理 | 用户已给→直接；缺→主控列 2-3 备选 + 权衡，或主控自做正反两臂分析形成结论 |
 | 3 | 决策陈述 | 明确 chosen + 关键理由（与驱动因素对应，2-4 条）+ rejected 理由 |
 | 4 | 后果评估 | 正向 / 负向 / 中性三类影响 |
-| 5 | 编号 + 写 ADR | 按 `templates/adr.md` 写 `{adr_dir}/{语义slug}.md`（归域规则见运行约定）；更新 `~/.claude/decisions/KNOWLEDGE.md` 单源索引（写前 re-read 防并发丢条，见 `adr-protocol.md §并发修改`）；**自检**：按 `references/adr-checklist.md` 核对命名/frontmatter/KNOWLEDGE 同步。**本 skill 是全部决策留痕的唯一收口**（含投委会表决⑥、探索战役 P7、效果回退判定）：其他环节只提议不写 ADR |
+| 5 | 编号 + 写 ADR | 按 `templates/adr.md` 写 `{adr_dir}/{语义slug}.md`（归域规则见运行约定）；更新 `decisions/KNOWLEDGE.md` 单源索引（写前 re-read 防并发丢条，见 `adr-protocol.md §并发修改`）；**自检**：按 `references/adr-checklist.md` 核对命名/frontmatter/KNOWLEDGE 同步。**本 skill 是全部决策留痕的唯一收口**（含投委会表决⑥、探索战役 P7、效果回退判定）：其他环节只提议不写 ADR |
 | 6 | 状态机 + 跨类型链 | Supersede 双向记录（规则=`adr-protocol.md §状态机`）；源自 consensus → frontmatter 写 `related_consensus` 且 consensus.final.json 回写 `linked_adr`（`adr-protocol.md §跨类型链`）；**自检**：`pending_adr→linked_adr` 回写完成、`related_consensus` 指向真实 final.json、Supersedes 双向一致 |
-| 7 | 收尾 + 沉淀 | 写 `metrics.latest.json`（调用留痕由 collect.py 自动落全局轨）；按 `standards/common/knowledge-protocol.md` schema **更新 `~/.claude/decisions/KNOWLEDGE.md` 索引**（新条目 type=adr，含跨类型关联字段） |
+| 7 | 收尾 + 沉淀 | 写 `metrics.latest.json`（仅在本次验收要求时记录，见共享运行约定）；按 `standards/common/knowledge-protocol.md` schema **更新 `decisions/KNOWLEDGE.md` 索引**（新条目 type=adr，含跨类型关联字段） |
 
 ## 输出规范
 
@@ -68,16 +68,18 @@ frontmatter：`title` / `status` / `date` / `supersedes`（可选）/ `supersede
 
 ## ADR 库治理
 
-**触发条件**（任一）：①本次沉淀新增/大改 ≥2 份 ADR ②活跃区（meta/data 双域）>24 份或单域 >18 份（阈值定版见 adr/meta/dual-domain-taxonomy）——主控**主动提议**治理，用户确认后执行；session-review `adr-governance-overdue` 信号自动兜底提醒（库超限时）。
+**触发条件**（任一）：①本次沉淀新增/大改 ≥2 份 ADR ②活跃区（meta/data 双域）>24 份或单域 >18 份（阈值定版见 adr/meta/dual-domain-taxonomy）——主控**主动提议**治理，用户确认后执行；本次维护时由主控核对现状。
 
 **治理动作**（三板斧，非全量重写）：
 1. **压缩**：单份 >40 行压回 ≤40——只留决策语义（Status/Context 2-3 行/Decision 要点/Consequences 正负各 1-2 行/Alternatives 各 1 行），实现细节归 skill 条款不留在 ADR
-2. **废弃**：Superseded 且零活跃引用（grep skills/KNOWLEDGE/CLAUDE.md）→ **物理删除**（历史靠 git，decisions-tiered-versioning，无 archive 堆叠），同步删 KNOWLEDGE 条目；亦适用于 Accepted 零引用且裁决已由规范/结构承载的一次性重构 ADR
+2. **废弃**：Superseded 且零活跃引用（grep skills/KNOWLEDGE/AGENTS.md）→ **物理删除**（历史靠 git，decisions-tiered-versioning，无 archive 堆叠），同步删 KNOWLEDGE 条目；亦适用于 Accepted 零引用且裁决已由规范/结构承载的一次性重构 ADR
 3. **分组复核**：活跃域按 meta/data 双域归属（细分主题走 KNOWLEDGE tag），新 ADR 归对域；harness 业务决策不进中央库（落对应 skill decisions/）
 
 守不可变惯例：压缩不改决策语义、不改语义名、不断 supersedes 链——git 历史保全量。
 
 ## 记忆沉淀尾步（战役 20260917 采纳 #3：memory 沉淀者归口）
+
+本仓 Codex 执行本次获授权的沉淀时：记忆正文写仓内 `memory/`，`memory/MEMORY.md` 只加标题/路径/检索词及计数；宿主记忆仅保存定位指针，不存正文。决策正文继续按本 skill 归域规则写入既有目录，更新 `decisions/KNOWLEDGE.md`，不向平台 memory 写副本。下述平台散文件写法仅保留原宿主兼容用途。
 
 ADR 收口后判定：未达 ADR 线但跨项目通用或有复召回价值的教训 → 写平台 memory 散文件 + MEMORY.md 索引行（格式对齐 memory-governance 约定 Step1，含计数锚回填）；判据不达则不留。本步使 memory 链条「沉淀→召回→治理→淘汰」闭环，写路径唯一归口在此，其余组件只读。
 

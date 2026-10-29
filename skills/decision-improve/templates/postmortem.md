@@ -13,7 +13,7 @@ related_postmortem:   # 可选：仅 ADR 回链此 postmortem 时由 ADR 写入�
 ## OODA 记录
 
 - **Observe(事实)**：<时间线/症状/影响/客观数据，只记事实不归因>
-- **Orient(判断)**：严重度 <1-4>；是否复发 <是/否，链回 related_postmortem>；根因法 <5Why/鱼骨>
+- **Orient(判断)**：严重度 <1-4>；是否复发 <是/否，正文链回历史 id>；根因法 <5Why/鱼骨>
 - **Decide(决策)**：<全量复盘 / 转 consensus 裁决根因 / 退出>
 
 ## 五要素

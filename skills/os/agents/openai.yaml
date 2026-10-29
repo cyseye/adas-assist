@@ -1,0 +1,4 @@
+interface:
+  display_name: "os"
+  short_description: "$os [mode] [+bk] [+vcn] <task>；help 查看内部模式用法"
+  default_prompt: "$os help"

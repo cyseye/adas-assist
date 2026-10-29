@@ -11,7 +11,7 @@
 | 目录即业务域 | 分类靠目录承载（ADR 库 meta/data 双域 + postmortems/；skill 本地 `decisions/` 子目录（本地不进版本控制）与 `project-docs/common/` 同规）；文件名不再重复目录词（`decisions/fixer-public-agent.md` 而非 `decisions/design-fixer-*.md`）——域词属专名（adas-assist-loop）或主题核心词（删后语义泛化）时保留 |
 | slug 全局唯一 | 新建时 grep 查重；撞名换更精确语义词重试（≤3 次） |
 | 文件名即唯一标识 | frontmatter 不设 id 字段；互链/引用（supersedes/superseded_by/related_*/postmortem_id/正文引用）一律用 slug |
-| 单一最终版 | 禁文件名版本后缀（.vN）——版本走 frontmatter，项目文档历史靠 git（[knowledge-doc-governance-consolidation](../../decisions/adr/meta/knowledge-doc-governance-consolidation.md)） |
+| 单一最终版 | 禁文件名版本后缀（.vN）——版本走 frontmatter，项目文档历史靠 git（历史 ADR knowledge-doc-governance-consolidation 本仓未包含，本文件承载现行规则） |
 
 ## 二、文档管理三则
 
@@ -25,7 +25,7 @@
 
 - 四层分层（L3 长期 / L2 中期 / L1 短期 / L0 临时）与流动规则：`knowledge-lifecycle.md`
 - ADR 库治理三板斧（压缩/废弃删除/分组复核）与阈值：decision-record SKILL.md「ADR 库治理」
-- 自动信号：session-review 的 adr-governance-overdue / adr-progression-review / adr-consistency（frontmatter/索引/死链一致性）+ repo-hygiene（版本管理边界三分类检测）
+- 本次维护时检查 frontmatter、索引、死链和版本管理边界，不依赖自动信号。
 
 ## 四、跨域量尺码消歧（L 码全局对表，2026-09-26 立）
 

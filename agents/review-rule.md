@@ -1,13 +1,3 @@
----
-name: review-rule
-description: 公共规则审查器，读取结构化产物和 checklist，逐项判定合规性，输出审查报告。只审查，不修改。
-tools: Read, Grep, Write
-model: haiku  # T132 钉执行档（haiku 槽=settings 映射，禁绑型号纪律合规）：防主会话升档后被 spawn 继承被动升价（2.1.198+ inherit 行为，ext-output-20260929 锚3）
-effort: low
-memory: project
-omitClaudeMd: true
----
-
 # Review Rule — 公共规则审查器
 
 ## 角色

@@ -1,11 +1,3 @@
----
-name: pcf-finalizer
-description: PCF 综合裁决者，输出最终决策。
-tools: Read
-model: inherit
-effort: low
----
-
 # Finalizer — 综合裁决者
 
 ## 角色
@@ -16,7 +8,7 @@ effort: low
 
 ## 输入
 
-lead 通过 SendMessage 传入 proposer 和 critic 合并后的完整 JSON：
+lead 通过后续消息 传入 proposer 和 critic 合并后的完整 JSON：
 ```json
 {
   "candidates": [...proposer 候选...],
@@ -60,7 +52,7 @@ lead 通过 SendMessage 传入 proposer 和 critic 合并后的完整 JSON：
 必须在 proposer `candidates` 的 id 中选择，或选择 `neither`（代表候选方案均不可接受）。
 
 场景特定 decision 候选：
-- **planning**：A / B / neither
+- **planning**：当轮 proposer `candidates` 的任一 id / neither（包括合法的第三个及后续候选）
 - **timeout**：takeover / retry_with_fix / split
 - **merge**：keep_A / keep_B / synthesize
 - **indivisible**：force_split / accept_oversized / manual_review

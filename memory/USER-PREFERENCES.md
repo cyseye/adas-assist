@@ -1,7 +1,7 @@
 # USER-PREFERENCES · 跨机用户偏好层（随仓共享）
 
 > 跨项目、跨机器稳定的用户工作偏好。knowledge-recall 第三召回源（KNOWLEDGE 之后）。
-> 沉淀纪律：仅收「跨项目通用且用户多次表达」的偏好；项目特定约定归各项目 `.claude/memory/`；一次性纠正归平台 memory（本机）。格式与 KNOWLEDGE 条目兼容：`- 标题 | 偏好 | 摘要`。
+> 沉淀纪律：仅收「跨项目通用且用户多次表达」的偏好；项目特定约定归各项目 `.adas-assist/memory/`；一次性纠正归平台 memory（本机）。格式与 KNOWLEDGE 条目兼容：`- 标题 | 偏好 | 摘要`。
 
 ## tag: 工作方式
 

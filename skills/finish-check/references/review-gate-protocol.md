@@ -1,6 +1,6 @@
 # finish-check 评审门协议
 
-> 复用 `_shared/review-gate-skeleton.md`（骨架未包含，判定逻辑以本文件特化值为准）：编排契约（主控串行 spawn 禁 background）+ 严重性分级 + 评分公式 + 判定优先级 + PCF 决策空间与 Finalizer 约束；档位/reviewer 结构/PCF 触发分级见 SKILL.md「梯度选择」。本文件只定义 finish-check 特有项：判定语义 + must-fix + issue→severity 映射 + 判级纪律 + 维度权重/阈值。
+> 复用 `_shared/review-gate-skeleton.md`（共享骨架已包含，判定逻辑以本文件特化值为准）：编排契约（主控串行 spawn 禁 background）+ 严重性分级 + 评分公式 + 判定优先级 + PCF 决策空间与 Finalizer 约束；档位/reviewer 结构/PCF 触发分级见 SKILL.md「梯度选择」。本文件只定义 finish-check 特有项：判定语义 + must-fix + issue→severity 映射 + 判级纪律 + 维度权重/阈值。
 
 ## 判定语义（quick/standard，无加权评分）
 
@@ -61,4 +61,4 @@
 - 检查报告：`{work_dir}/.build/report.finish-check.round.{N}.json` + 终审 `{work_dir}/.build/finish-check-report.json`（上游编排按此路径读取）
 - PCF：`{work_dir}/.build/finish.pcf.{context,proposer,critic,finalizer}.json`
 - 装配上下文：`{work_dir}/.build/finish-context.json`
-- 产物生命周期（inline 零文件 / file 汇报后清理 / 验证标记落 `.claude/.state/`）见 SKILL.md 运行约定
+- 产物生命周期（inline 零文件 / file 汇报后清理 / 验证标记落 `.adas-assist/.state/`）见 SKILL.md 运行约定

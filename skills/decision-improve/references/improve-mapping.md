@@ -17,7 +17,7 @@
 | | severity(1-4) | 主控（Orient 步） |
 | | category | 主控（复发匹配键） |
 | | status | draft→accepted |
-| | related_postmortem | 主控（复发时链回） |
+| | related_postmortem | ADR 写者（ADR→postmortem 回链；复发只记正文） |
 | | 五要素 | 主控（根因步+五要素步） |
 | `{slug}-capa.md` | postmortem_id | 链回 postmortem slug |
 | | status(整体) | 映射规则=capa-protocol.md §CAPA 闭环状态机 |

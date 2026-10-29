@@ -1,5 +1,5 @@
 {
-  "_note": "安全敏感模式集单源（G1 出网门/G2 push 门共用；协议正文 standards/security-protocol.md 引用本件，勿在他处复制正则）。分级与白名单规则见协议。改动须附阳性对照（2026-09-20 P1 立件）。2026-09-21 P3 红队演练修订：home-path 去尾斜杠依赖（「/Users/名」无斜杠引用形态曾漏，P3 实锤）+新增 gitattr-escape（textconv/filter 持久扫描逃逸面，字符类写法防模式自匹配）；正文中类自指串用字符类伪装是立件惯例。",
+  "_note": "本地敏感模式单源；协议见 standards/security-protocol.md。调用方显式执行，不构成自动外发或提交门。修改须验证阳性、阴性与绕过反例。",
   "version": "2026-09-22",
   "patterns": [
     {

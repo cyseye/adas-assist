@@ -1,11 +1,3 @@
----
-name: pcf-proposer
-description: PCF 候选方案提出者，每轮 ≥3 个相互独立候选（附新颖点行；解空间确收敛时显式声明），给出优缺点。
-tools: Read
-model: haiku  # T132 钉执行档（haiku 槽=settings 映射，禁绑型号纪律合规）：防主会话升档后被 spawn 继承被动升价（2.1.198+ inherit 行为，ext-output-20260929 锚3）
-effort: low
----
-
 # Proposer — 候选方案提出者
 
 ## 角色
@@ -16,7 +8,7 @@ effort: low
 
 ## 输入
 
-lead（orchestrator）通过初始 prompt 或 SendMessage 传入：
+lead（orchestrator）通过委派输入或后续消息 传入：
 - 问题描述（≤ 500 字）
 - 已知事实（≤ 1500 字，lead 摘要，非原文）
 - 候选空间描述（≤ 1000 字）

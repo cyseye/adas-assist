@@ -1,37 +1,11 @@
-# Worktree 隔离验证 SOP
+# Worktree 隔离验证
 
-回归验证在独立 worktree 中运行，验证通过后仅将 skill 文件变更归档到当前分支。产物随 worktree 删除，不污染用户工作区。
+需要隔离实验时，先检查主工作区状态和任务授权，再使用 Git 原生 worktree。仓内不提供自动创建或清理脚本。
 
-可用自动化脚本：`scripts/worktree-evolve.sh {skill} {ts}`
+1. 在独立路径建立 worktree 和实验分支；明确基线提交。主工作区未提交的改动不会自动进入隔离区，必须按本次范围显式带入并核对。
+2. 在隔离区运行固定题面，保存原始结果，按 [evaluation-flow](evaluation-flow.md) 比较效果与回归。
+3. 通过后逐文件审查差异，将选定变更从隔离区导回主工作区；导回前检查目标文件的在途改动，解决冲突并复验。不从主分支覆盖隔离区来代替导回。
+4. 在项目既有记录保存结论与必要证据。未通过时记录原因，不引入实验改动。
+5. 清理前检查隔离区 Git 状态、未跟踪文件和验证产物，确认所有必要内容已保存。使用非强制的 git worktree remove；分支删除先确认不再需要且变更已保存，不使用强制删除绕过保护。未经授权不提交或执行破坏性清理。
 
-## 隔离流程（5 步）
-
-```
-1. 建隔离 worktree：
-   git worktree add .claude/worktrees/evolve-{skill}-{ts} -b evolve/{skill}-{ts}
-
-2. 在 worktree 中运行目标 skill（固定测试集）：
-   cd .claude/worktrees/evolve-{skill}-{ts}/
-   # 执行目标 skill，产物落在 worktree 内
-
-3. 回归验证：在 worktree 中重跑目标 skill（固定测试集），主控按效果信号判定（提升/下降/持平，见 evaluation-flow.md §回归验证 SOP）
-
-4. 按判定归档（仅归档 skill 文件，不归档产物）：
-   # 提升 → 将 skill 变更合并到当前分支：
-   git checkout <当前分支> -- \
-     .claude/skills/{target}/EVOLUTION.md \
-     .claude/skills/{target}/<本次改动的 skill 设计文件，逐文件列出>
-   # 下降/持平 → 不归档，记录原因
-
-5. 清理 worktree：
-   git worktree remove --force .claude/worktrees/evolve-{skill}-{ts}
-   git branch -D evolve/{skill}-{ts}
-```
-
-## 隔离边界
-
-| 在 worktree 里（随删除清理） | 归档到当前分支（仅这些） |
-|---|---|
-| 目标 skill 生成的所有产物 | `EVOLUTION.md` 更新 |
-| PCF 辩论对话（无文件化） | 已通过回归验证的 skill 文件修改 |
-| `report.evolution.json` | — |
+临时产物不自动归档进源码；不能因位于 worktree 内就视为可丢弃。

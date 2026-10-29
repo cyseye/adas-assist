@@ -28,16 +28,16 @@ description: "skill 资产治理/skill 增删判断/skill 拆分合并（含口�
 
 | Step | 动作 | 工具 / 详情 |
 |------|------|------------|
-| 0 | 信号采集 + 召回 | 来源：用户主动 / explore 转交 / registry 累积 / 主 agent 观察；逐条记录证据；**读 `~/.claude/decisions/KNOWLEDGE.md` 评估待评估 skill 与既有知识沉淀的关系**（按 `standards/common/knowledge-protocol.md` 标准词表匹配相关 ADR/lifecycle 决策，判断是否已有相关裁决） |
+| 0 | 信号采集 + 召回 | 来源：用户主动 / explore 转交 / registry 累积 / 主 agent 观察；逐条记录证据；**读 `decisions/KNOWLEDGE.md` 评估待评估 skill 与既有知识沉淀的关系**（按 `standards/common/knowledge-protocol.md` 标准词表匹配相关 ADR/lifecycle 决策，判断是否已有相关裁决） |
 | 1 | 信号归类 | 按 `references/lifecycle-signals.md` 匹配：新增 / 拆分 / 合并 / 无 |
-| 2 | 量化门槛校验 | `lifecycle-signals.md §量化门槛`（复用率≥2 / 可定义指标 / 不重叠 / 拆后可测不降）；投委会语境（立项/投资机会）的收益量化模板见 `~/.claude/skills/_shared/investment-committee.md §收益量化模板`（未包含，本仓跳过投委会语境） |
+| 2 | 量化门槛校验 | `lifecycle-signals.md §量化门槛`（复用率≥2 / 可定义指标 / 不重叠 / 拆后可测不降） |
 | 3 | 不动清单过滤 | `lifecycle-signals.md §不动清单` → 命中即判定「不动」，跳 Step 7 |
 | 4 | 风险评级 | `references/gate-rules.md §3`：新增=中、拆分/合并=高、仅识别=低；**追认禁令三条件 grep（org-formations U11）**：涉及对已静默删改的 skill「事后追认/合并」时，逐条核 `git log` 有变更 + 引用计数（U1 双 grep 路径全集）归零 + 无 revert commit——三条件齐即禁追认，补 revert 不洗白 |
 | 5 | 决策表判定 | `lifecycle-signals.md §决策表`：建议动作 / 不动（记 memory）；**建议新增时拟名按组前缀制/见名知意/查重顺序校验**（skill-naming.md 本仓未包含，以此三查为人工口径），不合规范的名字不进建议 |
 | 5.5（建议时）| 根因+影响面前置 | 仅建议动作时执行，判定「不动」跳过（对齐 `_shared/evolution-discipline.md §根因与影响面前置`）：① 一句话根因——信号为何发生、现有形态为何不行；② 影响面全量排查——拟动 skill 名的全仓引用点（各 SKILL.md 转交边界 / KNOWLEDGE.md / 全局调用台账 invocations.jsonl）精确 grep 可下放 sonnet 执行 agent，但回传必须含**命令原文+命中清单**（可复验）；语义影响面判断仍归主控——调研结论须经交叉验证（假阳性教训在案）；L1（仅识别）一句话豁免，L2+（跨 skill 拆合）全量四步 |
-| 6（建议时）| PCF 辩论 | 风险中/高走 PCF：串行 spawn `pcf-proposer`→`pcf-critic`→`pcf-finalizer`（文件驱动，见 `references/gate-rules.md §4` + `~/.claude/skills/_shared/pcf-execution-flow.md`）；**Step 5.5 根因链+影响点清单并入提案材料（pcf-proposer 必读，提案不回应根因即 fail；清单即 pcf-critic 检查面）**；**L2+ 体系变更并触发 devils-panel**（PCF 论方案优劣，devils-panel 反方挑战"为何不做"——按 `devils-panel/references/integration-mapping.md 接入点1` 分档：L2 单轮快审/L3 完整对抗，报告作为裁决输入，正方材料复用提案不重复 spawn） |
+| 6（建议时）| PCF 辩论 | 风险中/高走 PCF：串行 spawn `pcf-proposer`→`pcf-critic`→`pcf-finalizer`（文件驱动，见 `references/gate-rules.md §4` + `skills/_shared/pcf-execution-flow.md`）；**Step 5.5 根因链+影响点清单并入提案材料（pcf-proposer 必读，提案不回应根因即 fail；清单即 pcf-critic 检查面）**；**L2+ 体系变更并触发 devils-panel**（PCF 论方案优劣，devils-panel 反方挑战"为何不做"——按 `devils-panel/references/integration-mapping.md 接入点1` 分档：L2 单轮快审/L3 完整对抗，报告作为裁决输入，正方材料复用提案不重复 spawn） |
 | 7 | 产出 | 按 `templates/lifecycle-decision.json` schema 写 `{task_dir}/.build/lifecycle-decision.json` + `metrics.latest.json`（见 `references/lifecycle-mapping.md §metrics`） |
-| 8 | 收尾 + 沉淀 | **建议动作等用户确认，不自动新建 / 拆分 / 合并**；按 `standards/common/knowledge-protocol.md` 索引 schema 更新 `~/.claude/decisions/KNOWLEDGE.md`：lifecycle 决策索引条目（type=lifecycle，tag 节按协议词表主题归属，关联待落地 ADR） |
+| 8 | 收尾 + 沉淀 | **建议动作等用户确认，不自动新建 / 拆分 / 合并**；按 `standards/common/knowledge-protocol.md` 索引 schema 更新 `decisions/KNOWLEDGE.md`：lifecycle 决策索引条目（type=lifecycle，tag 节按协议词表主题归属，关联待落地 ADR） |
 
 ## 输出规范
 
@@ -83,7 +83,7 @@ description: "skill 资产治理/skill 增删判断/skill 拆分合并（含口�
 | `standards/skill-naming.md` | skill 命名规范（本仓未包含；Step 5 拟名按组前缀/见名知意/查重人工口径） | 新增场景 |
 | `references/gate-rules.md` | 接入前提 / 触发条件 / 风险评级 / PCF 触发 / 与 evolution 边界 | 全量 |
 | `references/lifecycle-mapping.md` | 编排链路 + 转交边界 + 产物字段映射 + metrics 采集 | 全量 |
-| `~/.claude/skills/_shared/pcf-execution-flow.md` | PCF 三件套执行流（共享） | 全量 |
+| `skills/_shared/pcf-execution-flow.md` | PCF 三件套执行流（共享） | 全量 |
 | `templates/lifecycle-decision.json` | 产物 schema | 按需 |
 
 ## 反模式
@@ -95,4 +95,4 @@ description: "skill 资产治理/skill 增删判断/skill 拆分合并（含口�
 | 把内容优化当增删；与 decision-explore 双份维护增删逻辑 | 内容优化走 skill-evolution 不归本 skill；explore 只识别信号转交，裁决归本 skill |
 | 不走 PCF 直接建议拆分 / 合并 | 拆分 / 合并为高风险，须经 PCF 裁决 |
 | 只给拆合建议不给根因链+影响面 | 必附（Step 5.5），提案材料同 PCF 输入——表面症状不得直接成为改动方案 |
-| 拆合提案与已知失败反模式撞型（T120，2026-09-28） | 提案前 grep `~/.claude/.state/evolution-pool/anti-patterns-<当月>.md` 签名对账，命中即否决并附锚转登记；新增反模式随轮追加（锚义务同失败证据断言门） |
+| 拆合提案与已知失败反模式撞型（T120，2026-09-28） | 提案前 grep `.state/evolution-pool/anti-patterns-<当月>.md` 签名对账，命中即否决并附锚转登记；新增反模式随轮追加（锚义务同失败证据断言门） |

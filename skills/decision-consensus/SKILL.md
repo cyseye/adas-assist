@@ -10,7 +10,7 @@ description: "多角色共识/Delphi 共识/方案裁决，多轮收敛，主控
 
 ## 运行约定
 
-> 目录与中间产物约定（`{task_dir}`/`{skill_dir}`、`.build/` gitignore）见 `~/.claude/skills/_shared/runtime-conventions.md §1`。
+> 目录与中间产物约定（`{task_dir}`/`{skill_dir}`、`.build/` gitignore）见 `skills/_shared/runtime-conventions.md §1`。
 
 - 产物命名：`consensus.round{R}.proposal.{i}.json` / `consensus.round{R}.summary.json` / `consensus.final.json` / `debates.md`
 - 复用现有 agent（不新建）：`pcf-proposer` / `pcf-critic` / `pcf-finalizer`，主控编排多轮
@@ -41,14 +41,14 @@ description: "多角色共识/Delphi 共识/方案裁决，多轮收敛，主控
 
 | Step | 动作 | 工具 / 详情 |
 |------|------|------------|
-| 0 | 解析分歧 + 召回 | 提取争议点 + 选定参与视角（裁剪规则单源=`references/delphi-protocol.md §视角裁剪规则`）；**读 `~/.claude/decisions/KNOWLEDGE.md` 找相关 ADR/postmortem 装配裁决背景**（按 `standards/common/knowledge-protocol.md` 标准词表匹配分歧主题，供各视角 proposal 参考） |
+| 0 | 解析分歧 + 召回 | 提取争议点 + 选定参与视角（裁剪规则单源=`references/delphi-protocol.md §视角裁剪规则`）；**读 `decisions/KNOWLEDGE.md` 找相关 ADR/postmortem 装配裁决背景**（按 `standards/common/knowledge-protocol.md` 标准词表匹配分歧主题，供各视角 proposal 参考） |
 | 1 | 并行提案 | 每视角 spawn 1 个 `pcf-proposer`（并行、互不可见）；主控按转写规则产 `consensus.round{R}.proposal.{i}.json` |
 | 2 | 汇总去标识 | 主控合并各 proposal → 提取共识点 + 差异点 → `consensus.round{R}.summary.json`（含 convergence_score） |
 | 3 | 收敛判定 | 见 `references/convergence-rules.md`：收敛 → 残余≥2 走 Step4（critic）再 Step5、残余<2 直 Step5；未收敛且 R<max_rounds → R++，summary 反馈各视角回 Step1 |
 | 4 | 残余挑战（可选） | 收敛后仍剩 ≥2 残余分歧 → spawn `pcf-critic` 挑战 |
 | 5 | 最终裁决 | spawn `pcf-finalizer` → `consensus.final.json`（与 PCF finalizer 输出兼容） |
 | 6 | 记录 | 追加 `debates.md`（格式单源 `_shared/pcf-execution-flow.md §辩论 history 持久化`，2026-09-25 自 task-orchestrator 迁入） |
-| 7 | 指标采集 | 按 `references/decision-mapping.md §metrics 采集`，写 `{task_dir}/.build/metrics.latest.json`，含 `rounds`/`convergence_score`/`residual_risks_count`/`overturn_rate`（调用留痕由 collect.py 自动落全局轨） |
+| 7 | 指标采集 | 按 `references/decision-mapping.md §metrics 采集`，写 `{task_dir}/.build/metrics.latest.json`，含 `rounds`/`convergence_score`/`residual_risks_count`/`overturn_rate`（仅在本次验收要求时记录，见共享运行约定） |
 | 8 | 沉淀 | consensus.final.json 属运行时产物不入 KNOWLEDGE 索引；重大裁决 → 转 `decision-record` 沉淀 ADR（ADR 为唯一索引载体，`pending_adr`→`linked_adr` 链随 record 落地，见 `decision-record/references/adr-protocol.md §跨类型链`） |
 
 ## 输出规范

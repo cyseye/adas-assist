@@ -10,9 +10,9 @@ description: "任务/项目 Postmortem+CAPA/OODA 复盘/持续改进：失败/�
 
 ## 运行约定
 
-> 目录与中间产物约定（`{task_dir}`、`.build/` gitignore）见 `~/.claude/skills/_shared/runtime-conventions.md §1`。
+> 目录与中间产物约定（`{task_dir}`、`.build/` gitignore）见 `skills/_shared/runtime-conventions.md §1`。
 
-- `{postmortem_dir}` = `~/.claude/decisions/postmortems/`（复盘文档存放目录）；不 spawn subagent，主 agent 交互式执行，根因分歧大时主控对抗自审裁决
+- `{postmortem_dir}` = `decisions/postmortems/`（复盘文档存放目录）；不 spawn subagent，主 agent 交互式执行，根因分歧大时主控对抗自审裁决
 - 命名：`{slug}.md`（语义 kebab 全局唯一，禁数字前缀）；CAPA 文档 `{slug}-capa.md` 同 slug 前缀链回
 
 ## 术语（本 skill 定调，所有 references 对齐）
@@ -44,20 +44,20 @@ description: "任务/项目 Postmortem+CAPA/OODA 复盘/持续改进：失败/�
 | Step | 动作 | 工具 / 详情 |
 |------|------|------------|
 | 0 | 触发识别（OODA-Observe 起点） | 识别复盘信号；判定是否值得复盘（严重度≥阈值，见 `references/postmortem-protocol.md §值得复盘的判定`）；无价值 `[INFO]` 退出 |
-| 1 | OODA-Observe 收集事实 | 时间线/症状/影响/客观数据；**只记事实不归因**；AskUserQuestion ≤4 问/批；归因阶段标签取词表单源 `references/failure-taxonomy.md`（2026-09-26 D2 落地，禁自造同义标签） |
-| 2 | OODA-Orient 判断 | 严重度分级(1-4)；查同类别历史 postmortem 判定是否复发（`references/capa-protocol.md §复发判定`）；**上游有 clarified-requirements.md 时：先读其 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则**读 `~/.claude/decisions/KNOWLEDGE.md` 找相关 ADR/postmortem 装配根因背景**（按 `standards/common/knowledge-protocol.md` 标准词表匹配主题 tag；复发匹配规则单源=`references/capa-protocol.md §复发判定`，category 合法值=signal-tiers.json `capa_categories` 枚举）；选根因法（简单→5Why，复杂多因素→鱼骨） |
+| 1 | OODA-Observe 收集事实 | 时间线/症状/影响/客观数据；**只记事实不归因**；用户交互 ≤4 问/批；归因阶段标签取词表单源 `references/failure-taxonomy.md`（2026-09-26 D2 落地，禁自造同义标签） |
+| 2 | OODA-Orient 判断 | 严重度分级(1-4)；查同类别历史 postmortem 判定是否复发（`references/capa-protocol.md §复发判定`）；**上游有 clarified-requirements.md 时：先读其 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则**读 `decisions/KNOWLEDGE.md` 找相关 ADR/postmortem 装配根因背景**（按 `standards/common/knowledge-protocol.md` 标准词表匹配主题 tag；复发匹配规则单源=`references/capa-protocol.md §复发判定`，category 合法值=signal-tiers.json `capa_categories` 枚举）；选根因法（简单→5Why，复杂多因素→鱼骨） |
 | 3 | OODA-Decide 决策 | 是否全量 postmortem；根因分歧大→主控对抗自审裁决根因；无复盘价值 `[INFO]` 退出 |
 | 4 | 根因分析 | 5Why 或鱼骨（人/机/料/法/环/测），规则单源=`references/postmortem-protocol.md §根因分析法`；产出技术根因 + 流程根因 |
 | 5 | Postmortem 五要素 | 按 `templates/postmortem.md` 写 `{postmortem_dir}/{slug}.md`：症状/根因/影响/行动/教训 |
 | 6 | CAPA 规划 | 按 `templates/capa.md` 写 `{postmortem_dir}/{slug}-capa.md`：纠正 + 预防；每 action 必含 owner+due+验证标准 |
-| 7 | 沉淀 + 闭环 | 按 `standards/common/knowledge-protocol.md` 索引 schema（summary 守 `standards/common/knowledge-protocol.md` summary 字段 bigram 约定）**更新 `~/.claude/decisions/KNOWLEDGE.md`**：postmortem/capa 索引条目（type=postmortem|capa）+ 建 `related_verify`/`related_adr` 跨类型链（`decision-record/references/adr-protocol.md §跨类型链`）；CAPA 行动闭环前 capa.md 整体状态保持 Open（沉淀落点：postmortem/capa 正文留本域，进平台 memory 层走 `memory-governance` 通道）；**若 CAPA 含纠正类 action（type=纠正）→ capa.md 标 `requires_reverify=true`，提议重跑 `decision-verify` 确认根因消除（闭合 verify→improve→re-verify）** |
-| 8 | 指标采集 | 按 `references/improve-mapping.md §metrics 采集`，写 `{task_dir}/.build/metrics.latest.json`（postmortem_quality/action_count/capa_closed_count/action_completion_rate/recurrence_rate/recurrence_category）（调用留痕由 collect.py 自动落全局轨） |
+| 7 | 沉淀 + 闭环 | 按 `standards/common/knowledge-protocol.md` 索引 schema（summary 守 `standards/common/knowledge-protocol.md` summary 字段 bigram 约定）**更新 `decisions/KNOWLEDGE.md`**：postmortem/capa 索引条目（type=postmortem|capa）+ 建 `related_verify`/`related_adr` 跨类型链（`decision-record/references/adr-protocol.md §跨类型链`）；CAPA 行动闭环前 capa.md 整体状态保持 Open（沉淀落点：postmortem/capa 正文留本域，进平台 memory 层走 `memory-governance` 通道）；**若 CAPA 含纠正类 action（type=纠正）→ capa.md 标 `requires_reverify=true`，提议重跑 `decision-verify` 确认根因消除（闭合 verify→improve→re-verify）** |
+| 8 | 指标采集 | 按 `references/improve-mapping.md §metrics 采集`，写 `{task_dir}/.build/metrics.latest.json`（postmortem_quality/action_count/capa_closed_count/action_completion_rate/recurrence_rate/recurrence_category）（仅在本次验收要求时记录，见共享运行约定） |
 
 ## 输出规范
 
 产物 `{slug}.md` 必含【Postmortem 五要素】（定义见 §术语；写法见 `references/postmortem-protocol.md`），产物顺序：① 症状 ② 根因（附 5Why/鱼骨链）③ 影响 ④ 行动（指向 capa.md action_id）⑤ 教训。
 
-frontmatter：`id` / `title` / `date` / `incident_date` / `severity`(1-4) / `category`(复发匹配键) / `status` / `related_postmortem`(复发时链回历史 id) / `related_verify`(可选，跨类型链) / `related_adr`(可选，跨类型链)；跨类型链字段见 `decision-record/references/adr-protocol.md §跨类型链`。
+frontmatter：`id` / `title` / `date` / `incident_date` / `severity`(1-4) / `category`(复发匹配键) / `status` / `related_postmortem`(ADR→postmortem 回链；复发在正文记录历史 id) / `related_verify`(可选，跨类型链) / `related_adr`(可选，跨类型链)；跨类型链字段见 `decision-record/references/adr-protocol.md §跨类型链`。
 `{slug}-capa.md` actions 表：`action_id` / `type`(纠正|预防) / `description` / `owner` / `due` / `status`(Open|In-Progress|Closed|Verified) / `verification`。
 
 ## 降级策略
@@ -75,7 +75,7 @@ frontmatter：`id` / `title` / `date` / `incident_date` / `severity`(1-4) / `cat
 ## 产物生命周期
 
 - `postmortem.md` + `capa.md` 落 `decisions/postmortems/`，分层入 git（decisions-tiered-versioning：复盘知识资产入库；PENDING 信号池本地）
-- postmortem status：初始 `draft`（Step 5 写入）；Step 7 沉淀时五要素齐全且经确认 → `accepted`；已 `accepted` 正文不可变，新认知另起 postmortem 并在 `related_postmortem` 链回
+- postmortem status：初始 `draft`（Step 5 写入）；Step 7 沉淀时五要素齐全且经确认 → `accepted`；已 `accepted` 正文不可变，新认知另起 postmortem 并在正文链回历史 id
 - capa 整体 status：映射规则单源=`references/capa-protocol.md §CAPA 闭环状态机（per-action）`
 - `.build/` 草稿执行后清理（metrics.latest.json 留人工复盘比对，无自动消费方）
 

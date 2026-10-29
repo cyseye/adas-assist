@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
-"""secret-scan.py——G1/G2 共享扫描公共件（单源）。
+"""本地敏感内容扫描的纯函数工具。
 
-地位声明（T20，2026-09-21 抽取）：本模块是双门扫描管道的**唯一实现**，由
-  G1 skills/skill-evolution/scripts/g1-outbound-guard.py（_scan_variants 薄壳）
-  G2 skills/skill-evolution/scripts/cc-commit-gate.py（_normalized_texts/
-     _scan_encoded_line/_match 后验 薄壳）
-消费。抽取依据：2026-09-21 轮⑥ G1/G2 双门三处同款修改（bounds 变体/滑窗拼接/
-词粘连后验）触发预设演化条件——同类修改再发即抽公共件，双门勿再各自实现。
-模式集单源仍是 _shared/security-patterns.json（本模块不持有模式，只收 pats 参数）。
-
-三件公共逻辑：
-  a) normalized_texts(s)——完整规范化变体池（G1/G2 实现并集）
-  b) segment_candidates(text) / decoded_segments(text)——编码段提取+滑窗拼接+解码
-  c) is_word_fused(text, match_start)——cred 类词粘连后验
-零模型纯 regex；无 I/O、无副作用。
+模式单源为 skills/_shared/security-patterns.json，由调用方显式传入。
+提供 normalized_texts、segment_candidates / decoded_segments 和 is_word_fused。
+无 I/O、无自动拦截或宿主注册；消费方负责范围、授权与正负样本验证。
 """
 import base64
 import re

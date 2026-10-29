@@ -1,6 +1,6 @@
 # Review Gate Protocol — 验证门控协议
 
-decision-verify 的迭代验证评分标准、循环规则、PCF 触发条件（特有维度 / 数据源 / must-fix / Schema）。通用机制（评分公式 / 判定逻辑 / PCF 决策空间 / 嵌套 spawn 约束）（review-gate-skeleton 未包含，判定逻辑以本文件特化值为准），主控顶层串行 spawn reviewer/fixer 执行评审，**禁止 background 委托 review-gate**（review-gate agent 仅作协议来源）。
+decision-verify 的迭代验证评分标准、循环规则、PCF 触发条件（特有维度 / 数据源 / must-fix / Schema）。通用机制以 `skills/_shared/review-gate-skeleton.md` 为共享骨架，本协议定义 decision-verify 的特化规则；冲突时保留 must-fix 与通过约束，具体阈值和触发条件按本协议执行。主控顶层串行 spawn reviewer/fixer 执行评审，**禁止 background 委托 review-gate**（review-gate agent 仅作协议来源）。
 
 > **正确性与安全性优先**：正确性（40%）与安全性（30%）合计 70% 权重，是本协议最高优先维度。修复排序中正确性 P0 与安全性 P0 并列最高（仅次于必须修复项）。
 
@@ -87,7 +87,7 @@ review-gate 从 review-rule 的 report 归档：
 | 收敛阈值 | 5 | 相邻轮次分差 < 5 → plateau |
 | 最大轮次 | 5 | 达 5 轮未通过 → PCF |
 
-**档位特化**（上表为 full 档值；**档位参数在此单源**，decision-verify SKILL.md「验证档位」节只留指针不复写。standard/full 判定逻辑不变；**quick 为骨架轻量评审门在 verify 域的实例**——无评分 pass/fail、蓝队修 1 次+复验 1 轮、不上 PCF 改 escalate_to_user，形态见骨架（未包含）§轻量评审门`）：
+**档位特化**（上表为 full 档值；档位参数由 judge 的 `--tier` 从本表导出，调用方不得覆写阈值。`--profile base` 保留其 BLOCKER/MAJOR/MINOR 评分词表，默认 `standard` 轮次门；该通用 profile 不可替代本协议四维 verify profile。standard/full 判定逻辑不变；**quick 为无评分路径**，调用 `verify-judge --tier quick` 明确拒绝，主控按 SKILL.md quick 简化规则直接判定）：
 
 | 档 | 最大轮次 | 评分制 | PCF 触发 |
 |----|---------|--------|---------|
@@ -97,7 +97,11 @@ review-gate 从 review-rule 的 report 归档：
 
 ### 判定逻辑
 
-骨架七步判定骨架未包含，判定逻辑以本文件特化值为准 §判定逻辑（must-fix 一票否决 → 维度底线 → 总分 → PCF 升级 → FIXABLE 循环，任何层级不过不被下层掩盖），阈值用本文件 §5 表特化值。本协议新增一条特化：**修复停滞**——round≥2 且本轮 fixed_count==0 → PCF（fixer 能修的已修，防维度底线死循环；fixed_count 源自 report.fix.round.{N}.json）。
+`verify-judge --profile verify --tier standard|full` 从本表导出 pass=90、critical=60、converge=5 及 max_rounds（standard=3/full=5）。可省略 `thresholds`；若传入，必须与档位契约完全一致，否则非零拒绝。必须提供四个且仅四个协议维度，每维显式提供正权重、协议 floor=80 与 issues 数组；权重和必须为1。issue 必须显式提供 profile 词表内的 severity。空 issues 是合法无问题输入；空 dimensions、缺 floor、非80 floor、未知严重度、NaN/无穷和负权重均拒绝，不产生 PASS。`--profile base` 保留自定义 0–100 floor。
+
+判定约束按轮次收敛：must-fix（包括安全性 P0）及维度底线违例禁止 PASS/accept_with_flags；未通过达到 plateau、full 首轮 CRITICAL 或终轮时输出 PCF，PCF 结果携带 `constraints` 与 `must_fix_count`，Finalizer 不得豁免这些约束。standard 首轮低于60仅记分并继续可修复循环；full 首轮低于60触发 PCF。合法无问题且达标可以 PASS。
+
+`fixed_count` **不由 judge 读取或推断**。主控在读取蓝队 `report.fix.round.{N}.json` 后检查 `fixed_count==0` 并转 PCF（quick 转 `escalate_to_user`）；需与 judge 的下一轮调用串行，避免把停滞检查重复实现于脚本。
 
 ---
 

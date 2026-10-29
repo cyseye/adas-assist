@@ -16,9 +16,10 @@ fail-only：只报告不改文件；退出码 0=全过，1=存在 ERROR（WARN �
 """
 import re
 import sys
+import argparse
 from pathlib import Path
 
-ASSET = Path(__file__).resolve().parent.parent          # 本仓根（scripts/ 上溯）
+ASSET = Path(__file__).resolve().parents[2]             # skills/scripts/ 上溯到本仓根
 ADR_META = ASSET / "decisions" / "adr" / "meta"
 LEDGERS = [ASSET / "decisions" / "postmortems" / "PENDING.md",
            ASSET / "decisions" / "postmortems" / "BACKLOG.md"]
@@ -45,8 +46,10 @@ def get_key(fm, key):
 
 def main():
     errors, warns = [], []
-    files = sorted(ADR_META.glob("*.md"))
+    files = sorted([*ADR_META.glob("*.md"), *(ASSET / "decisions" / "adr" / "data").glob("*.md")])
     slugs = {p.stem: p for p in files}
+    if len(slugs) != len(files):
+        errors.append("I3 ADR slug 在 meta/data 之间重复")
     archive_slugs = {p.stem for p in (ADR_META / "archive").glob("*.md")} if (ADR_META / "archive").exists() else set()
 
     for p in files:
@@ -61,7 +64,8 @@ def main():
                 errors.append(f"I4 {slug}: 缺必备键 {k}")
         # I1 status 枚举
         st = get_key(fm, "status")
-        if st is not None and st not in STATUS_ENUM:
+        status_target = re.fullmatch(r"Superseded by ([a-zA-Z0-9][a-zA-Z0-9_-]*)", st or "")
+        if st is not None and st not in STATUS_ENUM and not status_target:
             errors.append(f"I1 {slug}: status『{st}』不在白名单 {sorted(STATUS_ENUM)}")
         # I3 命名样式（WARN 级：E2 实证日期命名系推荐形态之一，不强制统一；判据=slug 唯一+date 键必有）
         if re.match(r"^(.*?)-(\d{8})$", slug):
@@ -77,10 +81,23 @@ def main():
             for target in targets:
                 if target in slugs:
                     back = get_key(frontmatter(slugs[target].read_text(encoding="utf-8")), "superseded_by")
-                    if slug not in (back or ""):
+                    target_status = get_key(frontmatter(slugs[target].read_text(encoding="utf-8")), "status")
+                    if back != slug and target_status != f"Superseded by {slug}":
                         errors.append(f"I2 {slug}: supersedes→{target} 在场但对方 superseded_by 未回填（E1 双向原子原则）")
                 elif target not in archive_slugs:
                     warns.append(f"I2 {slug}: supersedes→{target} 目标不存在（历史删除件，仅 git 可溯；存量悬空按清账单逐条销号）")
+        if status_target:
+            successor = status_target.group(1)
+            explicit_back = get_key(fm, "superseded_by")
+            if explicit_back and explicit_back != successor:
+                errors.append(f"I2 {slug}: status 与 superseded_by 目标冲突")
+            if successor not in slugs:
+                errors.append(f"I2 {slug}: Superseded by→{successor} 目标不存在")
+            else:
+                successor_fm = frontmatter(slugs[successor].read_text(encoding="utf-8"))
+                targets = [v.strip().strip('\"') for v in (get_key(successor_fm, "supersedes") or "").split(",")]
+                if slug not in targets:
+                    errors.append(f"I2 {slug}: 后继 {successor} 未声明 supersedes 回链")
         # I2 反向：Superseded 状态必须有 superseded_by
         if st == "Superseded" and not get_key(fm, "superseded_by"):
             errors.append(f"I2 {slug}: status=Superseded 但 superseded_by 为空")
@@ -88,7 +105,7 @@ def main():
     # I5 外参召回面对账（R8 机械化：external/ 件在 KNOWLEDGE 无索引行即报）
     kn = ASSET / "decisions" / "KNOWLEDGE.md"
     ext_dir = ASSET / "decisions" / "external"
-    if kn.exists() and ext_dir.exists():
+    if kn.exists():
         kn_text = kn.read_text(encoding="utf-8")
         # I6 索引重复行检测（20260930 sys-01 防复发门：历史曾实证三组 ADR 双登记稀释召回单源）
         seen, kn_dups = {}, []
@@ -106,7 +123,9 @@ def main():
             if f"]({p.parent.name}/{p.name})" not in kn_text and f"]({p.name})" not in kn_text:
                 warns.append(f"I5 external/{p.name}: KNOWLEDGE 零索引行=零召回（外参件结论行必登义务）")
 
-    print(f"adr-mdcheck: {len(files)} 件（adr/meta），ERROR {len(errors)} / WARN {len(warns)}")
+    print(f"adr-mdcheck: {len(files)} 件（adr/meta + adr/data），ERROR {len(errors)} / WARN {len(warns)}")
+    if not files:
+        print("no_data: 没有 ADR 可校验；零错误不代表 ADR 行为已验证")
     for e in errors:
         print("ERROR", e)
     for w in warns:
@@ -139,7 +158,7 @@ def next_id(prefix):
 
 
 def sync_count():
-    """计数注释机械同步（R4 根治：衍生数据不设人工单源；只改 `<!-- 计数：meta N / data N` 前缀数字，session-review 正则契约不变）"""
+    """计数注释机械同步（R4 根治：衍生数据不设人工单源；只改 `<!-- 计数：meta N / data N` 前缀数字，索引注释格式不变）"""
     kn = ASSET / "decisions" / "KNOWLEDGE.md"
     meta_n = len(list(ADR_META.glob("*.md")))
     data_n = len(list((ASSET / "decisions" / "adr" / "data").glob("*.md")))
@@ -161,7 +180,7 @@ def sync_count():
     new, n = re.subn(r"<!-- 计数：meta \d+ / data \d+",
                      f"<!-- 计数：meta {meta_n} / data {data_n}", text, count=1)
     if n == 0:
-        print("ERR: 计数注释句式未匹配（session-review 正则契约前缀），拒绝盲写")
+        print("ERR: 计数注释句式未匹配（索引注释前缀），拒绝盲写")
         return 1
     if new == text:
         print(f"count ok（meta {meta_n} / data {data_n} 已同步）")
@@ -195,7 +214,7 @@ def lifecycle_retro_grep(skill_name):
     注：U11 原始件在 archive（org-formations），「双 grep 路径全集」此处实现为
     资产面+台账面两族（skills/commands/agents/standards/rules/两地图 × decisions/）。"""
     import subprocess
-    home = Path.home() / ".claude"
+    home = ASSET
     # 条件1：git 历史有变更（skill 目录曾存在提交）
     log = subprocess.run(["git", "-C", str(home), "log", "--oneline", "--",
                           f"skills/{skill_name}"], capture_output=True, text=True)
@@ -224,6 +243,18 @@ def lifecycle_retro_grep(skill_name):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--root", type=Path, default=ASSET, help="显式项目资产根，不读用户全局目录")
+    root_args, remaining = parser.parse_known_args()
+    if not root_args.root.is_dir() or root_args.root.is_symlink():
+        parser.error("--root must be an existing non-symlink directory")
+    ASSET = root_args.root.resolve()
+    decisions_root = ASSET / "decisions"
+    if decisions_root.is_symlink() or any(p.is_symlink() for p in decisions_root.rglob("*")):
+        parser.error("decisions/ symlinks are not supported; use a concrete isolated asset tree")
+    ADR_META = ASSET / "decisions" / "adr" / "meta"
+    LEDGERS = [ASSET / "decisions" / "postmortems" / name for name in ("PENDING.md", "BACKLOG.md")]
+    sys.argv = [sys.argv[0], *remaining]
     if len(sys.argv) >= 3 and sys.argv[1] == "--next-id":
         next_id(sys.argv[2])
         sys.exit(0)

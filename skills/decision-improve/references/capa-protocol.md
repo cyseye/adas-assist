@@ -49,7 +49,7 @@ Open ──分配 owner──▶ In-Progress ──完成执行──▶ Closed 
 - 新 postmortem 的 `category` 与历史某 postmortem 相同 → 判复发
 - 复发时新 postmortem 在正文（Orient 节）说明历史 id，不在 frontmatter 写链（`related_postmortem` 仅用于 ADR→postmortem 回链）
 - 复发 postmortem 的 CAPA 必须评估历史 CAPA 为何失效（是未执行/执行无效/预防措施本身错）
-- **匹配失败处理**：精确 category 匹配失败 → 先按关键词/症状模糊匹配历史 postmortem → 命中判复发（confidence=medium）→ 仍无命中 → `[WARN] 无法判定复发` + AskUserQuestion 让用户裁定（新问题 / 复发），不静默判新问题
+- **匹配失败处理**：精确 category 匹配失败 → 先按关键词/症状模糊匹配历史 postmortem → 命中判复发（confidence=medium）→ 仍无命中 → `[WARN] 无法判定复发` + 用户交互 让用户裁定（新问题 / 复发），不静默判新问题
 
 ## 验证标准写法
 

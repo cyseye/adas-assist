@@ -48,9 +48,9 @@
 
 ```yaml
 work_dir: "{target_dir}"                      # 主控拼 {work_dir}/.build/ 写产物
-skill_dir: "~/.claude/skills/decision-verify"   # 主控据此定位 references
+skill_dir: "skills/decision-verify"   # 主控据此定位 references
 reviewer:
-  subagent_type: review-rule                  # 主控直接 spawn（非嵌套）
+  agent_type: reviewer                  # 主控直接 spawn（非嵌套）
   args: >
     target_files={target_files}
     checklist={skill_dir}/references/checklist-dimensions.md

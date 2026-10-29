@@ -11,7 +11,7 @@ description: "需求探索/Socratic 探索/澄清需求，收敛 artifact；主 
 
 ## 运行约定
 
-> 目录与中间产物约定（`{task_dir}`、`.build/` gitignore）见 `~/.claude/skills/_shared/runtime-conventions.md §1`。本 skill 不 spawn subagent，主 agent 交互式执行。
+> 目录与中间产物约定（`{task_dir}`、`.build/` gitignore）见 `skills/_shared/runtime-conventions.md §1`。本 skill 不 spawn subagent，主 agent 交互式执行。
 
 ## 何时启用
 
@@ -31,15 +31,15 @@ description: "需求探索/Socratic 探索/澄清需求，收敛 artifact；主 
 
 | Step | 动作 | 工具 / 详情 |
 |------|------|------------|
-| 0 | 识别模糊点 + 召回 | 通读需求，标注歧义/缺口/多解读处；**读 `~/.claude/decisions/KNOWLEDGE.md` 装配背景**（按 `standards/common/knowledge-protocol.md` 词表匹配需求关键词，供 Step 1-2 参考） |
+| 0 | 识别模糊点 + 召回 | 通读需求，标注歧义/缺口/多解读处；**读 `decisions/KNOWLEDGE.md` 装配背景**（按 `standards/common/knowledge-protocol.md` 词表匹配需求关键词，供 Step 1-2 参考） |
 | 1 | 生成澄清问题 | 按 `references/socratic-dimensions.md` 五维度（目标 / 边界 / 假设 / 约束 / 验收）出题 |
-| 2 | 提问 | AskUserQuestion（≤4 问/批）；用户答 → 更新认知；未答 → 转假设 |
-| 3 | 收敛判定 | 见 `~/.claude/skills/_shared/socratic-inquiry.md` 收敛信号；未收敛 → 回 Step 1 补问 |
+| 2 | 提问 | 用户交互（≤4 问/批）；用户答 → 更新认知；未答 → 转假设 |
+| 3 | 收敛判定 | 见 `skills/_shared/socratic-inquiry.md` 收敛信号；未收敛 → 回 Step 1 补问 |
 | 4 | 假设陈述 | 未澄清项按 `references/assumption-protocol.md` 六要素显式记录 |
 | 5 | 产出 | 按 `templates/clarified-requirements.md` 写 `{task_dir}/.build/clarified-requirements.md` |
 | 6 | 指标采集 | 主控算 completeness_score / dimension_coverage 写 `{task_dir}/.build/metrics.latest.json`（见下节） |
 | 7 | skill 自检 + 转交 | lifecycle 信号单源 = `decision-lifecycle/references/lifecycle-signals.md`（`references/skill-lifecycle.md` 已是指针壳）：「需要新 skill / 拆分 / 合并」→ 转 `decision-lifecycle`；**多角色争议 / 方案分歧（本步直判，不走 skill-lifecycle.md）→ 标 handoff 转 `decision-consensus`**（handoff={rationale:分歧点, context:clarified-requirements.md 路径}，consensus 以澄清产物作分歧上下文，不重复探索） |
-| 8 | 沉淀 | 重大决策点 / 需求结论 → 按 `standards/common/knowledge-protocol.md` schema 更新 `~/.claude/decisions/KNOWLEDGE.md`（type=requirement，tag 按词表主题归属，关联相关 ADR）；一般性需求不强制。无论是否沉淀，重大澄清收敛后**必须沉淀 ADR/KNOWLEDGE 条目**（reflex-check 以「窗口内有沉淀」判定 resolved 终态事件，weekly-eval 澄清转化率分子依赖它；澄清后零沉淀=该次澄清计为未转化——一次性问答类豁免）**产物 frontmatter 落 `recall_refs: [{path, why}]`**（Step 0 命中的 KNOWLEDGE/ADR 指针）——下游 finish-check/verify/improve/record Step 0 按指针直读，替代全索引重扫（转交指针化，ADR adr/data/token-effect-balance-v2） |
+| 8 | 沉淀 | 重大决策点 / 需求结论 → 按 `standards/common/knowledge-protocol.md` schema 更新 `decisions/KNOWLEDGE.md`（type=requirement，tag 按词表主题归属，关联相关 ADR）；一般性需求不强制。无论是否沉淀，重大澄清收敛后**必须沉淀 ADR/KNOWLEDGE 条目**（只在本次授权要求时维护；一次性问答不强制沉淀）**产物 frontmatter 落 `recall_refs: [{path, why}]`**（Step 0 命中的 KNOWLEDGE/ADR 指针）——下游 finish-check/verify/improve/record Step 0 按指针直读，替代全索引重扫（转交指针化，ADR adr/data/token-effect-balance-v2） |
 
 ## 输出规范
 
@@ -75,7 +75,7 @@ description: "需求探索/Socratic 探索/澄清需求，收敛 artifact；主 
 | 文件 | 用途 | 读取 |
 |------|------|------|
 | `references/socratic-dimensions.md` | 五维度提问清单 | 全量 |
-| `~/.claude/skills/_shared/socratic-inquiry.md` | 苏格拉底问法公共纪律（收敛信号/提问纪律/自问分派；未包含，收敛信号见本件 Step 3） | 全量 |
+| `skills/_shared/socratic-inquiry.md` | 苏格拉底问法公共纪律（收敛信号/提问纪律/自问分派；结合本件 Step 3） | 全量 |
 | `references/assumption-protocol.md` | 假设陈述六要素 | 全量 |
 | `references/skill-lifecycle.md` | 指针壳，单源=decision-lifecycle/references/lifecycle-signals.md | 按需 |
 | `templates/clarified-requirements.md` | 产物模板 | 按需 |

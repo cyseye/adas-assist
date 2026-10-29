@@ -5,16 +5,16 @@ description: "验证/Red-Blue 验证/质量门/验收：红队+蓝队+Checklist 
 
 # Skill: decision-verify · Red/Blue + Checklist 验证
 
-> effort 缺省：quick=low / standard=medium（全局缺省）/ full=high（model-governance 未包含，原指针 §5` 触发条件式升档。
+> effort：quick=low / standard=medium / full=high；以当前宿主配置为准。
 
-> 调度说明：本 skill 的 agents/*.md 不被平台注册，禁止按名 spawn。「委托 X」= 主控 Read agents/X.md 后按其定义自演，或以其全文作 prompt spawn general-purpose。（约定见 `_shared/runtime-conventions.md §4`）
+> 调度见 [runtime-conventions](../_shared/runtime-conventions.md#§4-私有-agents-调度约定)：读取角色正文，使用宿主支持的代理类型。独立上下文缺失时保持待验。
 
 对任意产物（code/design/prd/generic）做红蓝队迭代验证：红队(review-rule)主动找缺陷，蓝队(exec-review-fixer-blue)修复，**主控串行管迭代评分/一票否决/PCF**（按 review-gate-protocol.md）。
 
-**架构职责**：主控管对象判定+迭代编排+评分+收尾汇总；红队/蓝队/pcf-* 为叶子 agent（主控直接 spawn，非嵌套）。详细规则下沉 references/。每轮归维/评分/判定属机械算术，**调 `gate-assist.py verify-judge`**（stdin 喂 findings+thresholds，双词表 profile，判定优先级表内建）执行，主控只消费 verdict 决定下一步——禁逐轮手工算分（ADR adr/data/token-effect-balance-v2）。
+**架构职责**：主控管对象判定+迭代编排+评分+收尾汇总；红队/蓝队/pcf-* 为叶子 agent（主控直接 spawn，非嵌套）。详细规则下沉 references/。每轮归维/评分/判定属机械算术，**调 `gate-assist.py verify-judge --profile verify --tier {standard|full}`**（stdin 喂 findings，tier 唯一决定档位阈值与轮次；通用 base 词表显式使用 `--profile base`）执行，主控只消费 verdict 决定下一步——禁逐轮手工算分（ADR adr/data/token-effect-balance-v2）。
 
 ## 1. 运行约定
-1. `{skill_dir}` = `~/.claude/skills/decision-verify`
+1. `{skill_dir}` = `skills/decision-verify`
 2. `{target_dir}` = 待验证产物目录（用户传入）
 3. `{work_dir}` = `{target_dir}`（产出根目录；主控拼 `{work_dir}/.build/` 写产物）
 4. 文件传递：agent 间通过 `.build/*` 路径交付；prompt 仅传路径，不内联正文。
@@ -39,7 +39,7 @@ description: "验证/Red-Blue 验证/质量门/验收：红队+蓝队+Checklist 
 | 评分协议 | `references/review-gate-protocol.md` | 主控 |
 | 对象映射 | `references/verify-mapping.md` | 主控 |
 | 蓝队 fixer | `agents/exec-review-fixer-blue.md` | 主控调度 |
-| 红队 reviewer | `~/.claude/agents/review-rule.md` | 主控调度 |
+| 红队 reviewer | `../../agents/review-rule.md` | 主控调度 |
 
 > **不委托 review-gate agent**（嵌套 background spawn 断裂实证已登记 memory `review-gate-nested-bg-limit`）：主控直接 spawn 叶子 agent，通知链不断；评分/判定协议沿用 review-gate-protocol.md（agent 不复用，protocol 复用）。
 
@@ -48,7 +48,7 @@ description: "验证/Red-Blue 验证/质量门/验收：红队+蓝队+Checklist 
 ### Phase 0：对象判定
 按 `verify-mapping.md` 判定 object_type（用户显式 > 自动按扩展名/目录名 > generic+[INFO]）。据此选 checklist 特化项与评分权重。
 
-**召回**：**上游有 clarified-requirements.md 时：先读其 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则读 `~/.claude/decisions/KNOWLEDGE.md` 找相关 postmortem（按 `standards/common/knowledge-protocol.md` 标准词表匹配 target 主题），供 §9 复发判定参考——补 verify 现仅塞 handoff 转发不查历史的缺口。
+**召回**：**上游有 clarified-requirements.md 时：先读其 frontmatter `recall_refs` 直读命中条目，命中不足再全索引扫描**（转交指针化，ADR adr/data/token-effect-balance-v2）；否则读 `decisions/KNOWLEDGE.md` 找相关 postmortem（按 `standards/common/knowledge-protocol.md` 标准词表匹配 target 主题），供 §9 复发判定参考——补 verify 现仅塞 handoff 转发不查历史的缺口。
 
 **数据集召回**：object_type=design 时读 `{skill_dir}/data/red-blue-dataset.jsonl`（存在时），按 `task_type` + `task_chain.final_output_path` 匹配当前验证目标、筛 `status=active` 条目，命中进 Phase 1 `baseline_dataset` 参数（红队回归基线；schema 与防误判纪律见 `references/dataset-protocol.md`）。
 
@@ -64,7 +64,7 @@ description: "验证/Red-Blue 验证/质量门/验收：红队+蓝队+Checklist 
 
 - **档位推断**（用户未显式指定 tier）：单文件产物、提交前快验或上游 handoff 标快验/重验 → quick；常规验收（缺省）→ standard；用户说「深度/全量验证」或重大交付、跨多任务 → full；显式指定覆盖推断
 - **各档共享硬约束**：must-fix 一票否决（安全性 P0 / 反幻觉检出）全档生效；round-based 命名与 Phase 3 清理规则不变；数据集回写全档生效
-- **quick 简化判定（quick 全部特化在此单源）**：跳过评分（报告省略分数字段，仅 status/must_fix_count/must_fix_items/top_issues）、判定不走七步评分只用 must_fix==0 且 P0==0 → pass；否则蓝队修 1 次+复验 1 轮，fixed_count==0 或复验仍不过 → escalate_to_user（无 PCF 分支，争议直接 escalate_to_user）
+- **quick 简化判定（quick 全部特化在此单源）**：跳过评分（报告省略分数字段，仅 status/must_fix_count/must_fix_items/top_issues）、判定不走七步评分只用 must_fix==0 且 P0==0 → pass；否则蓝队修 1 次+复验 1 轮，fixed_count==0 或复验仍不过 → escalate_to_user（无 PCF 分支，争议直接 escalate_to_user）。quick 不调用计分型 `verify-judge`。
 - 档位由主控按产物规模直判，不套 devils-panel 判据——该判据是变更影响面轴（自进化域），验证域是产物规模轴，两轴不同，总则不改写既有判据
 
 ### Phase 1：组装调用参数
@@ -73,14 +73,14 @@ description: "验证/Red-Blue 验证/质量门/验收：红队+蓝队+Checklist 
 - fixer_args = "target_dir={td} object_type={ot}"
 
 ### Phase 2：主控串行迭代（按 review-gate-protocol.md）
-初始化：Read `{skill_dir}/references/review-gate-protocol.md` 提取评分维度/权重/公式/阈值/PCF，按「验证档位」表取 max_rounds/评分制开关/PCF 触发集；`round=0, prev_score=null, score_history=[]`。
+初始化：Read `{skill_dir}/references/review-gate-protocol.md` 提取评分维度/权重/公式/阈值/PCF，按「验证档位」表取 tier；`round=0, prev_score=null, score_history=[]`。每轮调用 `python3 gate-assist.py verify-judge --profile verify --tier {standard|full}`；tier 参数唯一决定阈值与轮数，stdin 的 tier（若有）必须一致。quick 不进入此计分循环。
 
 loop（max_rounds=按档位，取值见上方「验证档位」单源注 = review-gate-protocol.md §5）：
-1. `round += 1`；spawn review-rule（subagent_type=review-rule，传 reviewer_args，output 中 `{round}` 替换为当前轮次）→ `{work_dir}/.build/report.red-team.round.{round}.json`；**同步等待 spawn 完成再 Read**（确保 report 落盘，防时序致读取空/丢失）。
-2. 按 protocol §2-§4 评分：issue 归 4 维、must-fix 标记（§3）、维度分/总分公式（§4 单源，权重按 verify-mapping.md object_type）。
+1. `round += 1`；读取根 `agents/review-rule.md`，通过宿主已注册的审查代理类型委派（传 reviewer_args，output 中 `{round}` 替换为当前轮次）→ `{work_dir}/.build/report.red-team.round.{round}.json`；**同步等待 spawn 完成再 Read**（确保 report 落盘，防时序致读取空/丢失）。
+2. 按 protocol §2-§4 评分：issue 归 4 维、must-fix 标记（§3）、维度分/总分公式（§4 单源，权重按 verify-mapping.md object_type）；安全性 P0 由 judge 计入 must-fix。judge 不消费 `fixed_count`；蓝队回执落盘后，主控在下一轮评分前检查 `fixed_count==0`，直接转 PCF（quick 按 quick 专属规则转 escalate_to_user），不得再让 judge 重复实现修复停滞路由。
 3. Write `{work_dir}/.build/report.review.round.{round}.json`（schema §7）。
-4. 判定（七步优先级与阈值全表=protocol §5 单源：must-fix 一票否决→维度底线→总分→CRITICAL→plateau→修复停滞→超轮次）：CRITICAL 仅 full（standard 记 score_history 进蓝队循环不即时触发）；quick 档判定见「验证档位」节 quick 简化判定单源。
-5. FIXABLE→委托蓝队 exec-review-fixer-blue（不被平台注册，主控 Read `agents/exec-review-fixer-blue.md` 后按其定义自演，或以其全文作 prompt spawn general-purpose；按 fixer_spec 规范，传 work_dir/round_report=`{work_dir}/.build/report.review.round.{round}.json`/round_number/fixer_args）→`{work_dir}/.build/report.fix.round.{round}.json`；fixed_count==0→plateau→PCF（quick 档行为见 quick 简化判定单源）；否则更新 prev_score、score_history，回 1。
+4. 判定：judge 负责 must-fix/维度底线约束、总分、full 首轮 CRITICAL、plateau 与终轮 PCF；PCF 输出的 constraints 必须原样传给 PCF，且不得 accept_with_flags 豁免。fixed_count==0 由主控按上一步独立转 PCF。standard CRITICAL 仅记 score_history 不即时触发；quick 档见 quick 简化判定单源。
+5. FIXABLE→委托蓝队 exec-review-fixer-blue（主控读本技能 `agents/exec-review-fixer-blue.md`，通过宿主已注册的执行代理类型委派；按 fixer_spec 规范，传 work_dir/round_report=`{work_dir}/.build/report.review.round.{round}.json`/round_number/fixer_args）→`{work_dir}/.build/report.fix.round.{round}.json`；fixed_count==0→plateau→PCF（quick 档行为见 quick 简化判定单源）；否则更新 prev_score、score_history，回 1。
 6. PCF→（仅 standard/full）串行 spawn pcf-proposer→pcf-critic→pcf-finalizer（文件驱动，context 写 `{work_dir}/.build/review.pcf.context.json`）→按决策执行：`fix_targeted`（spawn fixer 限 top-3 must-fix/P0 后跑最终轮）/`accept_with_flags`（须无 must_fix）/`escalate_to_user`。
 
 收敛（PASS / accept_with_flags / escalate_to_user）→ Phase 3。

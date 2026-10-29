@@ -9,9 +9,9 @@ description: "魔鬼天团——三方对抗自我监督（分级触发）：正
 
 ## 运行约定
 
-1. `{skill_dir}` = `~/.claude/skills/devils-panel`；`{target_dir}` = 被审查对象目录；`{work_dir}` = `{target_dir}/.build/`
+1. `{skill_dir}` = `skills/devils-panel`；`{target_dir}` = 被审查对象目录；`{work_dir}` = `{target_dir}/.build/`
 2. 文件传递：prompt 仅传路径不内联正文
-3. 角色用通用 `subagent_type="claude"` + `references/adversary-roles-protocol.md` 模板构造 prompt（无专用 agent 文件）
+3. 角色用通用 `agent_type="reviewer"` + `references/adversary-roles-protocol.md` 模板构造 prompt（无专用 agent 文件）
 
 ## 触发条件（按复杂度分级）
 
@@ -25,7 +25,7 @@ description: "魔鬼天团——三方对抗自我监督（分级触发）：正
 
 L1（≤1 分）=不触发主控自审；L2（≤3）=单轮快审；L3（>3）=完整对抗。判定标准、执行方式与缺省打分器伪代码详见 `references/integration-mapping.md §复杂度分级`、`§执行流程 Phase 0`。
 
-**接入点**：四个接入点（decision-lifecycle Step6 / skill-evolution 根因前置 / session-start 周评估 L1 主控自审 / decision-record Step0 转交源）的默认级别与升级条件见 `references/integration-mapping.md §接入点总览`（唯一权威表）。
+**接入点**：四个接入点（decision-lifecycle Step6 / skill-evolution 根因前置 / effect-governance 显式效果审计 / decision-record Step0 转交源）的默认级别与升级条件见 `references/integration-mapping.md`（唯一权威表）。
 
 **不启用**：日常代码改动 / 文档措辞修订 / 配置参数微调（有明确回滚）/ 用户直接调用（应通过接入点）/ 方案分歧多角色收敛裁决 → `decision-consensus`（本 skill 管机制/变更审查类对抗，PCF 单轮快裁归其内核）。
 
@@ -36,7 +36,7 @@ L1（≤1 分）=不触发主控自审；L2（≤3）=单轮快审；L3（>3）=
 | target | 是 | 审查对象路径（skill/protocol/rule） |
 | change_type | 是 | 变更类型（skill_add/skill_delete/skill_split/evolution_regression/system_health_scan） |
 | evolution_history | 否 | 历史变更轨迹（EVOLUTION.md） |
-| regression_details / scan_scope | 否 | 退化详情（skill-evolution 场景）/ 扫描范围（session-start 场景） |
+| regression_details / scan_scope | 否 | 退化详情（skill-evolution 场景）/ 扫描范围（效果审计场景） |
 
 ## 执行骨架（canonical=详版伪代码 `references/integration-mapping.md §执行流程`，两处同改）
 
@@ -44,7 +44,7 @@ Phase 清单：0 召回+定档 → Round 1 正方→反方 → Round 2（仅 L3�
 
 **verdict 映射**：`reject`→BLOCK（返回接入点）；`compromise`→CONDITION（附条件）；`approve`→PASS。
 
-**互斥检出（org-formations U8）**：收尾写报告前，对同工件存在性 grep `pcf.finalizer.md`（PCF 终裁面）；两面 verdict 方向相反（reject/BLOCK vs approve/PASS）→ AskUserQuestion 用户被动仲裁，结果回写边界。
+**互斥检出（org-formations U8）**：收尾写报告前，对同工件存在性 grep `pcf.finalizer.md`（PCF 终裁面）；两面 verdict 方向相反（reject/BLOCK vs approve/PASS）→ 用户交互 用户被动仲裁，结果回写边界。
 
 ## 输出规范
 
@@ -58,7 +58,7 @@ Phase 清单：0 召回+定档 → Round 1 正方→反方 → Round 2（仅 L3�
 | target 缺失 | 硬失败 |
 | spawn 失败 | 重试 1 次 → 仍失败 hard fail |
 | protagonist / antagonist 输出异常 | 标 INFO：正方论证不足反方默认胜；反方无挑战正方默认胜 |
-| referee 输出异常 | 标 ERROR：裁决失败，升级 AskUserQuestion |
+| referee 输出异常 | 标 ERROR：裁决失败，升级 用户交互 |
 
 ## 转交边界
 

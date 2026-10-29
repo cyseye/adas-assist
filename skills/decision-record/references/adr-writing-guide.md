@@ -51,10 +51,10 @@
 
 ## 经验汇总文档（decisions/experience/，本地特例）
 
-session-review 的 `experience-summary-due` 信号触发（距上次「经验汇总」文档 >90 天 且 meta 域新增 ≥3 份）时，产出汇总型**文档**落 `decisions/experience/`（仅本地，非 ADR、无 frontmatter 状态机、不入 KNOWLEDGE 索引），文件名固定含 `experience-summary` + 年月（供扫描器定位），title 含「经验汇总」：
+用户要求经验汇总且本次有足够实际材料时，产出汇总型**文档**落 `decisions/experience/`（仅本地，非 ADR、无 frontmatter 状态机、不入 KNOWLEDGE 索引），文件名固定含 `experience-summary` + 年月（供扫描器定位），title 含「经验汇总」：
 
 - **来源**：本期来源清单——参与汇总的 EVOLUTION.md 文件 / 信号处理记录 / 新 ADR 编号
-- **正文**：提取的稳定经验，每条格式「结论一句话 + 落点」（落点枚举：CLAUDE.md 纪律 / standards 某文件 / 某 skill 条款 / 已建 ADR 编号 / 维持现状的理由）；尾部附未消化项清单，留待下期
+- **正文**：提取的稳定经验，每条格式「结论一句话 + 落点」（落点枚举：AGENTS.md 纪律 / standards 某文件 / 某 skill 条款 / 已建 ADR 编号 / 维持现状的理由）；尾部附未消化项清单，留待下期
 - **汇总后动作**：各 skill EVOLUTION.md 按惯例滚动（摘要表保留、细节清）；新汇总取代旧汇总时物理删除旧文件
 
 ## 长度与粒度

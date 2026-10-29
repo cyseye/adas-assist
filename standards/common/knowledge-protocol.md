@@ -1,6 +1,6 @@
 # 决策知识召回与索引协议
 
-> 统一各 decision-* skill 对 `~/.claude/decisions/KNOWLEDGE.md` 的「召回（读）」与「沉淀（写）」，
+> 统一各 decision-* skill 对 `decisions/KNOWLEDGE.md` 的「召回（读）」与「沉淀（写）」，
 > 替代此前各 skill Step0 各自手写的 tag 匹配逻辑。本文件定字段级契约；闭环机制已兑现于 decision-* 知识钩子与反射层。
 
 ## 一、召回协议（消费端 · 各 skill Step0）
@@ -51,7 +51,7 @@
 | 字段 | 约束 |
 |---|---|
 | title | 简短可读，≤20 字，含关键结论 |
-| path | 相对 `~/.claude/decisions/` 或仓库根；跨仓单源资产（双仓权威分界：共享 skill `decisions/`、`postmortems/` 在本仓）允许 adas-assist 绝对路径指针，禁复制副本 |
+| path | 相对 `decisions/` 或仓库根；本仓资产使用相对路径指针，禁复制副本 |
 | type | 枚举：adr / lifecycle / postmortem / capa / requirement / decision / reference（外参/调研沉底件的索引行专用，原文在本地不入库域，2026-09-27 沉淀治理轮登记）/ tombstone（冷藏项：判死理由+复活条件入摘要，产物清理后指针可指向存活载体；2026-09-16 战略日历轮登记）；新类型须先在此登记再使用，避免散落 |
 | summary | 一句话 ≤30 字（阈值单源=knowledge-lifecycle.md 压缩原则），写结论而非描述；单一主题一行（原子化回写软门，2026-09-25 对标批：禁多主题打包行，写入前先 grep 同主题既有行防重复——先搜后写）；**bigram 约定（全出口适用，2026-09-26 自 knowledge-precipitation-protocol 并入）：须含 ≥2 个领域实词——中文 bigram（如「分库分表」「骨架优先」）或 ≥3 字符英文 token（如 `worktree`），禁全泛词（问题/处理/优化/机制等停用词）。依据：knowledge-recall 按实词交集计分（每命中 2 分，≥2 分才召回），全泛词 summary 沉淀即失效 |
 | cross_link | `字段:目标ID`（协议定义的跨类型链），多目标用 `;` 分隔（`pending_adr:0003;0004`）；无则 `-`；主题软关联靠 tag 分节，不进此字段；**supersede 双向锚**（2026-09-25 起）：条目被取代时旧行不删，cross_link 追加 `superseded_by:{新产物slug}`，与新 ADR frontmatter `supersedes` 构成双向可溯边（ADR-M12 双向一致在索引层的镜像，消「删行即失锚」违证据链硬门），历史行触碰时惰性补齐不批量回写；登记日≠裁决生效日时 summary 前缀 `effective:YYYY-MM-DD`（bi-temporal 语义，回填类条目适用） |
@@ -73,8 +73,8 @@
 
 > decision 族沉淀物（postmortem/adr 等）本就是抽象决策，与 design 族"防项目设计实现索引混入"场景不同；但职责边界对全族通用，沉淀前须过此判据。
 
-- `~/.claude/decisions/KNOWLEDGE.md` = 决策产物唯一索引（ADR/postmortem/capa + 领域七节召回），主动检索；决策知识资产分层入 git（knowledge-doc-governance-consolidation：活跃 ADR + 索引入库，postmortems/experience/PENDING 仅本地）；harness skill 业务决策 → 对应 skill `decisions/` 子目录（精选条目经 data/* 节索引可达）
-- `.claude/memory/`（项目级）与用户级 memory = 项目结论/场景约定 + 个人行为约束（详见下「三层 memory 契约」）
+- `decisions/KNOWLEDGE.md` = 决策产物唯一索引（ADR/postmortem/capa + 领域七节召回），主动检索；决策知识资产分层入 git（knowledge-doc-governance-consolidation：活跃 ADR + 索引入库，postmortems/experience/PENDING 仅本地）；harness skill 业务决策 → 对应 skill `decisions/` 子目录（精选条目经 data/* 节索引可达）
+- `.adas-assist/memory/`（项目级）与用户级 memory = 项目结论/场景约定 + 个人行为约束（详见下「三层 memory 契约」）
 - 项目设计实现（表结构/分区策略/阈值/矩阵/特定流程等项目特定细节）→ 项目 REF/TECH 文档 + git，**不进 KNOWLEDGE.md**
 
 > **路由登记义务（2026-09-13 实证）**：新增知识资产（skill/协议/ADR 域）落位时同步自查 README 是否需要补路由行——「新资产只长 skill 不长路由」会产生路由黑洞（历史实证：memory-governance 曾两图零登记）。
@@ -89,9 +89,9 @@
 
 | 层 | 位置 | 职责 |
 |---|---|---|
-| 平台 memory | `~/.claude/projects/<slug>/memory/` | 项目作用域教训结论层（结论+Why+How to apply，平台原生格式，不在 git） |
-| 跨机偏好 | `~/.claude/memory/USER-PREFERENCES.md` | 跨机用户偏好层（不动） |
-| 项目业务约定 | 项目 `.claude/memory/*.md` | 项目结论/场景约定（教训型笔记，入项目 git） |
+| 平台 memory | `{memory_root}/` | 项目作用域教训结论层（结论+Why+How to apply，平台原生格式，不在 git） |
+| 跨机偏好 | `{preferences_file}` | 跨机用户偏好层（不动） |
+| 项目业务约定 | 项目 `.adas-assist/memory/*.md` | 项目结论/场景约定（教训型笔记，入项目 git） |
 
 桥接规则：
 - memory 条目承载 ADR 结论时必须留 ADR 路径指针；ADR=决策论证层（Why+决策），memory=结论应用层（结论+How），KNOWLEDGE 索引=发现锚点层
